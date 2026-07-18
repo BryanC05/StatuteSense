@@ -1,0 +1,77 @@
+// StatuteSense Prisma Schema
+// Document storage and analysis persistence
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  name          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  documents     Document[]
+  customPrompts CustomPrompt[]
+  analyses      AnalysisResult[]
+}
+
+model Document {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  title          String
+  originalText   String
+  fileName       String?
+  fileType       String   // PDF, TXT, DOCX
+  fileSize       Int?     // in bytes
+  documentType   String   // Contract, NDA, Lease, Privacy Policy, Other
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  analyses       AnalysisResult[]
+  customPrompts  CustomPrompt[]
+
+  @@index([userId])
+  @@index([documentType])
+  @@index([createdAt])
+}
+
+model AnalysisResult {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  documentId    String?
+  document      Document? @relation(fields: [documentId], references: [id])
+  prompt        String
+  result        String   // Markdown-formatted analysis
+  modelUsed     String   // e.g., "qwen-2.5-72b", "gpt-4"
+  tokenCount    Int?
+  duration      Int?     // in milliseconds
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([documentId])
+  @@index([createdAt])
+}
+
+model CustomPrompt {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  name        String
+  description String?
+  prompt      String
+  category    String?  // Summarize, Risk Analysis, Compliance, etc.
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  documentId  String?
+  document    Document? @relation(fields: [documentId], references: [id])
+
+  @@index([userId])
+}

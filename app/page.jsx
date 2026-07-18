@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { marked } from "marked";
+import DocumentHistory from "../components/DocumentHistory";
 
 const TASKS = [
   "Summarize the document and highlight key clauses.",
@@ -86,6 +87,14 @@ const InfoIcon = ({ className }) => (
     <line x1="12" y1="8" x2="12.01" y2="8" />
   </svg>
 );
+
+const handleDocumentSelect = (doc) => {
+  // Load document into the editor
+  setText(doc.text);
+  setDocType(doc.type);
+  // Scroll to top to show editor
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 
 export default function HomePage() {
   const { data: session, status } = useSession();
@@ -435,7 +444,16 @@ export default function HomePage() {
           </section>
         </div>
 
-        <footer className="dashboard-footer">
+        {/* Document History Panel */}
+        <div style={{ padding: "0 2rem 2rem" }}>
+          <DocumentHistory onDocumentSelect={(doc) => {
+            setText(doc.text);
+            setDocType(doc.type);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }} />
+        </div>
+
+        <footerclassName="dashboard-footer">
           <p>
             Disclaimer: AI-generated analysis is not 100% accurate. Results are for shallow reference purposes only and do not constitute formal legal advice. Please consult with a qualified legal professional to verify critical details.
           </p>
