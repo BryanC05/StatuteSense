@@ -181,9 +181,9 @@ export default function DocumentHistory({ onDocumentSelect }) {
                 <button
                   onClick={() => toggleExpand(doc.id)}
                   className="record-clear-btn"
-                  style={{ fontSize: "0.75rem", padding: "4px 10px" }}
+                  style={{ minHeight: "36px", padding: "6px 14px", fontSize: "0.9rem" }}
                 >
-                  {expandedId === doc.id ? "▲ Hide Details" : "▼ Show Case & AI Response"}
+                  {expandedId === doc.id ? "▲ HIDE CASE DETAILS" : "▼ SHOW CASE & AI RESPONSE"}
                 </button>
 
                 {expandedId === doc.id && (

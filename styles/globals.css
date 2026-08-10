@@ -902,27 +902,34 @@ button {
 .record-clear-btn,
 .action-icon-btn,
 .chat-send-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  flex-shrink: 0;
   border-radius: 2px;
   font-family: var(--font-action);
   font-weight: 400;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s ease, filter 0.16s ease;
   position: relative;
-  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .run-btn {
   min-height: 56px;
-  padding: 12px 22px;
+  padding: 12px 24px;
   color: #ffffff;
   background: linear-gradient(135deg, #ff2a4b 0%, #e01b24 50%, #9e0c14 100%);
   border: 3px solid var(--gold);
   box-shadow: 4px 4px 0 #000000, 0 0 20px rgba(224, 27, 36, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.3);
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   line-height: 1;
   text-shadow: 2px 2px 0 #000000;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .run-btn::before {
@@ -960,6 +967,7 @@ button {
 
 .clear-btn {
   min-height: 56px;
+  padding: 12px 20px;
   color: var(--paper);
   background: linear-gradient(180deg, #1d2b45, #0f1727);
   border: 2px solid rgba(255, 203, 61, 0.3);
@@ -968,12 +976,13 @@ button {
 }
 
 .record-primary-btn {
+  min-height: 40px;
+  padding: 8px 18px;
   color: #0b0702;
   background: linear-gradient(180deg, #ffcb3d 0%, #e29b1b 100%);
   border: 2px solid #ffffff;
   box-shadow: 3px 3px 0 #000000;
-  font-size: 1.1rem;
-  padding: 8px 16px;
+  font-size: 1.05rem;
 }
 
 .record-primary-btn:hover {
@@ -984,11 +993,20 @@ button {
 
 .record-clear-btn,
 .record-delete-btn {
+  min-height: 40px;
+  padding: 8px 16px;
   font-size: 1rem;
   color: #ffb8b8;
-  background: rgba(140, 10, 16, 0.6);
-  border: 1px solid rgba(255, 77, 77, 0.4);
+  background: rgba(140, 10, 16, 0.7);
+  border: 2px solid rgba(255, 77, 77, 0.5);
   box-shadow: 2px 2px 0 #000000;
+}
+
+.record-clear-btn:hover,
+.record-delete-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0 #000000;
 }
 
 .record-controls {
@@ -1320,7 +1338,10 @@ button {
 
 .record-actions {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 /* ========== CHAT ========== */
