@@ -460,6 +460,36 @@ button {
   background: #ffffff;
   color: var(--text);
 }
+/* ========== COMPACT SELECT DROPDOWNS ========== */
+.select-frame.compact {
+  min-height: 36px;
+}
+
+.select-frame.compact::before {
+  top: 6px;
+  right: 34px;
+  bottom: 6px;
+}
+
+.select-frame.compact::after {
+  right: 12px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 6px solid var(--gold);
+  transform: translateY(-50%);
+}
+
+.select-frame.compact:hover::after,
+.select-frame.compact:focus-within::after {
+  border-top-color: #fff2bd;
+  transform: translateY(-40%);
+}
+
+.select-input.compact {
+  padding: 6px 40px 6px 12px;
+  font-size: 0.78rem;
+  letter-spacing: 0.1px;
+}
 
 /* ========== DROPZONE ========== */
 .dropzone {

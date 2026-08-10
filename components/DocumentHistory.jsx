@@ -146,15 +146,14 @@ export default function DocumentHistory({ onDocumentSelect }) {
                 </p>
               </div>
               <div className="record-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span className="select-frame" style={{ minHeight: '34px', display: 'inline-flex' }}>
+                <span className="select-frame compact" style={{ display: 'inline-flex' }}>
                   <select
                     value={doc.folderId || ''}
                     onChange={(e) => {
                       updateDocument(doc.id, { folderId: e.target.value || null });
                       fetchDocuments();
                     }}
-                    style={{ padding: '4px 30px 4px 10px', fontSize: '0.8rem', height: '34px' }}
-                    className="select-input"
+                    className="select-input compact"
                   >
                     <option value="">No Folder</option>
                     {folders.map((f) => (

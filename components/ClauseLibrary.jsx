@@ -176,7 +176,7 @@ export default function ClauseLibrary({ onInsert }) {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <span className="select-frame" style={{ minHeight: "46px" }}>
+        <span className="select-frame">
           <select
             className="record-select"
             value={filterCategory}
