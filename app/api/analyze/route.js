@@ -3,7 +3,18 @@ import pdfParse from "pdf-parse";
 import { generateAnalysis, getCurrentModel } from "../../../lib/ai";
 
 function buildAnalysisPrompt(documentText, task, docType) {
-  return `You are an expert legal analyst. Analyze the following ${docType} and provide a clear response for the requested task.\n\nDocument:\n${documentText}\n\nTask:\n${task}\n\nReturn the answer in a structured format with headings where helpful.`;
+  return `You are an expert legal analyst. Analyze the following ${docType} and provide a clear response for the requested task.
+
+Document:
+${documentText}
+
+Task:
+${task}
+
+CRITICAL LEGAL CITATION INSTRUCTIONS:
+- You MUST identify and list relevant real statutes, statutory provisions (e.g. UCC Articles, Restatement of Contracts, GDPR Articles, statutory codes), and established legal case precedents that apply to or reference the document clauses.
+- Include a dedicated section titled "### 📜 Legal Sources & Case Law References" at the end listing applicable statutes, regulations, and case law citations for reference.
+- Return the answer in a clear structured Markdown format.`;
 }
 
 export async function POST(request) {

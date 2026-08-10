@@ -130,7 +130,24 @@ export default function ChatInterface({ documentText, documentId }) {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="chat-input-row" style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
+      <div style={{
+        padding: "8px 12px",
+        marginBottom: "10px",
+        background: "rgba(255, 203, 61, 0.08)",
+        border: "1px solid rgba(255, 203, 61, 0.3)",
+        fontSize: "0.8rem",
+        color: "var(--muted)",
+        display: "flex",
+        alignItems: "center",
+        gap: "8px"
+      }}>
+        <span>⚠️</span>
+        <span>
+          <strong style={{ color: "var(--gold)" }}>AI Co-Counsel Advisory:</strong> AI responses may contain mistakes. Use for reference only and verify facts.
+        </span>
+      </div>
+
+      <div className="chat-input-row" style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
         <input
           type="text"
           className="chat-input"

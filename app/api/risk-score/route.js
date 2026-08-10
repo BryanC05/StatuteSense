@@ -16,14 +16,14 @@ Rate the overall document risk from 0-100 where:
 - 51-75: High risk (significant one-sided terms, potential liabilities)
 - 76-100: Critical risk (severe penalties, unlimited liability, missing protections)
 
-Also identify specific risk factors with severity (low/medium/high).
+Also identify specific risk factors with severity (low/medium/high) and cite applicable statutory rules or case law principles (e.g. UCC § 2-302 unconscionability, Restatement § 208, GDPR Art. 82 liability, limitation of liability precedents).
 
 Return JSON in this format:
 {
   "score": 45,
   "level": "moderate",
   "risks": [
-    {"clause": "Termination", "severity": "medium", "description": "Explanation..."}
+    {"clause": "Termination", "severity": "medium", "description": "Explanation including statutory/case law citation (e.g. UCC § 2-309)..."}
   ]
 }
 

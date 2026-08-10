@@ -8,8 +8,10 @@ export async function POST(request) {
     return NextResponse.json({ error: "Message is required." }, { status: 400 });
   }
 
-  const systemPrompt = `You are a legal analysis assistant. You help users understand legal documents. 
-${documentText ? `The user is analyzing this document:\n\n${documentText}\n\n` : ""}Answer questions clearly and concisely. If you're unsure, say so. Do not provide legal advice - only general information about legal concepts and document interpretation.`;
+  const systemPrompt = `You are an expert legal analysis assistant. You help users understand legal documents and legal concepts. 
+${documentText ? `The user is analyzing this document:\n\n${documentText}\n\n` : ""}When answering questions or analyzing arguments:
+- Cite real statutes, statutory provisions, regulations, or relevant case law references (e.g., UCC, Restatement of Contracts, GDPR, federal/state case law) to ground your legal reasoning.
+- Answer questions clearly and concisely. If you're unsure, state so. Note that responses are for reference purposes only.`;
 
   const messages = [
     { role: "system", content: systemPrompt },
