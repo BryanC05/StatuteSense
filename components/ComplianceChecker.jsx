@@ -41,23 +41,18 @@ export default function ComplianceChecker({ documentText }) {
         <h3 className="record-title">Compliance Checker</h3>
       </div>
 
-      <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
-        {FRAMEWORKS.map((fw) => (
-          <button
-            key={fw.id}
-            onClick={() => setSelectedFramework(fw.id)}
-            style={{
-              padding: "10px 16px",
-              background: selectedFramework === fw.id ? "var(--red)" : "var(--panel-2)",
-              border: `2px solid ${selectedFramework === fw.id ? "var(--gold)" : "var(--line)"}`,
-              color: selectedFramework === fw.id ? "white" : "var(--text)",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
+      <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap", alignItems: "center" }}>
+        <span className="select-frame">
+          <select
+            className="select-input"
+            value={selectedFramework}
+            onChange={(e) => setSelectedFramework(e.target.value)}
           >
-            {fw.name}
-          </button>
-        ))}
+            {FRAMEWORKS.map((fw) => (
+              <option key={fw.id} value={fw.id}>{fw.name}</option>
+            ))}
+          </select>
+        </span>
         <button
           className="record-primary-btn"
           onClick={checkCompliance}
@@ -65,6 +60,10 @@ export default function ComplianceChecker({ documentText }) {
         >
           {loading ? "Checking..." : "Run Check"}
         </button>
+      </div>
+
+      <div style={{ color: "var(--muted)", fontSize: "0.85rem", marginBottom: "16px" }}>
+        {FRAMEWORKS.find((f) => f.id === selectedFramework)?.description}
       </div>
 
       {!result && !loading && (
@@ -108,11 +107,13 @@ export default function ComplianceChecker({ documentText }) {
           </div>
 
           {result.gaps && result.gaps.length > 0 && (
-            <div style={{ marginTop: "16px", padding: "16px", background: "rgba(113, 26, 34, 0.2)", border: "1px solid var(--red)" }}>
-              <h4 style={{ color: "var(--red)", marginBottom: "8px" }}>⚠️ Gaps Identified</h4>
+            <div style={{ marginTop: "16px", padding: "16px", background: "rgba(113, 26, 34, 0.2)", border: "2px solid var(--red)" }}>
+              <h4 style={{ color: "var(--red)", marginBottom: "8px", fontFamily: "'Cinzel', serif", textTransform: "uppercase", fontSize: "0.9rem" }}>
+                Gaps Identified
+              </h4>
               <ul style={{ paddingLeft: "20px", color: "var(--muted)" }}>
                 {result.gaps.map((gap, idx) => (
-                  <li key={idx}>{gap}</li>
+                  <li key={idx} style={{ marginBottom: "4px" }}>{gap}</li>
                 ))}
               </ul>
             </div>

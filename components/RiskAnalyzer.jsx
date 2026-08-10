@@ -70,7 +70,9 @@ export default function RiskAnalyzer({ documentText }) {
 
           {result.risks && result.risks.length > 0 && (
             <div className="risk-factors">
-              <h4 style={{ marginBottom: "8px", color: "var(--paper)" }}>Risk Factors</h4>
+              <h4 style={{ marginBottom: "8px", color: "var(--paper)", fontFamily: "'Cinzel', serif", textTransform: "uppercase", fontSize: "0.9rem" }}>
+                Risk Factors
+              </h4>
               {result.risks.map((risk, idx) => (
                 <div key={idx} className={`risk-factor ${risk.severity}`}>
                   <span className="badge" style={{

@@ -43,20 +43,22 @@ export default function SearchBar({ onDocumentSelect }) {
       </div>
 
       {searched && (
-        <div style={{ color: "var(--muted)", marginBottom: "16px" }}>
+        <div style={{ color: "var(--muted)", marginBottom: "16px", fontSize: "0.9rem" }}>
           Found {totalResults} result{totalResults !== 1 ? "s" : ""}
         </div>
       )}
 
       {searched && totalResults === 0 && (
         <div className="empty-state" style={{ minHeight: "150px" }}>
-          <p>No results found for "{query}"</p>
+          <p>No results found for &ldquo;{query}&rdquo;</p>
         </div>
       )}
 
       {results.documents.length > 0 && (
         <div style={{ marginBottom: "20px" }}>
-          <h4 style={{ color: "var(--paper)", marginBottom: "10px" }}>📄 Documents ({results.documents.length})</h4>
+          <h4 style={{ color: "var(--paper)", marginBottom: "10px", fontFamily: "'Cinzel', serif", textTransform: "uppercase", fontSize: "0.9rem" }}>
+            Documents ({results.documents.length})
+          </h4>
           <div className="record-list">
             {results.documents.map((doc) => (
               <div
@@ -68,8 +70,8 @@ export default function SearchBar({ onDocumentSelect }) {
                 <div className="record-item-main">
                   <div className="record-item-title">{doc.title}</div>
                   <div className="record-meta">
-                    {doc.documentType} • {new Date(doc.createdAt).toLocaleDateString()}
-                    {doc.tags?.length > 0 && ` • Tags: ${doc.tags.join(", ")}`}
+                    {doc.documentType} &bull; {new Date(doc.createdAt).toLocaleDateString()}
+                    {doc.tags?.length > 0 && ` &bull; Tags: ${doc.tags.join(", ")}`}
                   </div>
                 </div>
                 <button className="record-primary-btn">Open</button>
@@ -81,7 +83,9 @@ export default function SearchBar({ onDocumentSelect }) {
 
       {results.clauses.length > 0 && (
         <div>
-          <h4 style={{ color: "var(--paper)", marginBottom: "10px" }}>📝 Clauses ({results.clauses.length})</h4>
+          <h4 style={{ color: "var(--paper)", marginBottom: "10px", fontFamily: "'Cinzel', serif", textTransform: "uppercase", fontSize: "0.9rem" }}>
+            Clauses ({results.clauses.length})
+          </h4>
           <div className="clause-library">
             {results.clauses.map((clause) => (
               <div key={clause.id} className="clause-card">

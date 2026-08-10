@@ -48,7 +48,7 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
   return (
     <div style={{ marginBottom: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-        <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: "0.85rem", textTransform: "uppercase" }}>
+        <span className="field-label" style={{ color: "var(--gold)", fontWeight: 900, fontSize: "0.76rem", textTransform: "uppercase", letterSpacing: "1px" }}>
           Folders
         </span>
         <button
@@ -57,37 +57,35 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
             setEditingId(null);
             setFormData({ name: "", color: COLORS[0] });
           }}
-          style={{
-            padding: "4px 10px",
-            background: "var(--panel-2)",
-            border: "1px solid var(--line)",
-            color: "var(--text)",
-            fontSize: "0.8rem",
-            cursor: "pointer",
-          }}
+          className="record-clear-btn"
+          style={{ minHeight: "30px", padding: "4px 10px", fontSize: "0.75rem" }}
         >
           {showForm ? "Cancel" : "+ New"}
         </button>
       </div>
 
       {showForm && (
-        <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+        <div style={{ display: "flex", gap: "8px", marginBottom: "10px", flexWrap: "wrap" }}>
           <input
             type="text"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="Folder name"
-            style={{ flex: 1, padding: "6px 10px", background: "var(--panel)", border: "1px solid var(--line)", color: "var(--text)" }}
+            className="record-search"
+            style={{ flex: 1, minWidth: "150px" }}
           />
-          <select
-            value={formData.color}
-            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-            style={{ padding: "6px", background: "var(--panel)", border: "1px solid var(--line)", color: "var(--text)" }}
-          >
-            {COLORS.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+          <span className="select-frame" style={{ minHeight: "40px", minWidth: "100px" }}>
+            <select
+              className="select-input"
+              value={formData.color}
+              onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+              style={{ padding: "6px 40px 6px 10px" }}
+            >
+              {COLORS.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </span>
           <button className="record-primary-btn" onClick={handleSave} style={{ padding: "6px 12px" }}>
             {editingId ? "Update" : "Add"}
           </button>
@@ -114,7 +112,6 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
                 e.stopPropagation();
                 handleEdit(folder);
               }}
-              style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer" }}
             >
               ✎
             </button>
@@ -123,7 +120,6 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
                 e.stopPropagation();
                 handleDelete(folder.id);
               }}
-              style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer" }}
             >
               ×
             </button>

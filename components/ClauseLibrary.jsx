@@ -103,40 +103,43 @@ export default function ClauseLibrary({ onInsert }) {
       </div>
 
       {showForm && (
-        <div style={{ marginBottom: "20px", padding: "16px", background: "var(--panel-2)", border: "2px solid var(--line)" }}>
-          <div style={{ marginBottom: "12px" }}>
+        <div className="panel" style={{ marginBottom: "20px", background: "var(--panel-2)" }}>
+          <div className="field-group">
             <label className="field-label">Title</label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="e.g., Termination for Convenience"
-              style={{ width: "100%", padding: "10px", background: "var(--panel)", border: "1px solid var(--line)", color: "var(--text)" }}
+              className="record-search"
             />
           </div>
-          <div style={{ marginBottom: "12px" }}>
+          <div className="field-group">
             <label className="field-label">Category</label>
-            <select
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              style={{ width: "100%", padding: "10px", background: "var(--panel)", border: "1px solid var(--line)", color: "var(--text)" }}
-            >
-              {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
+            <span className="select-frame">
+              <select
+                className="select-input"
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              >
+                {CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </span>
           </div>
-          <div style={{ marginBottom: "12px" }}>
+          <div className="field-group">
             <label className="field-label">Content</label>
             <textarea
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
               placeholder="Paste the clause text here..."
               rows={5}
-              style={{ width: "100%", padding: "10px", background: "var(--panel)", border: "1px solid var(--line)", color: "var(--text)", resize: "vertical" }}
+              className="editor-textarea"
+              style={{ minHeight: "120px" }}
             />
           </div>
-          <div style={{ marginBottom: "12px" }}>
+          <div className="field-group">
             <label className="field-label">Tags</label>
             <div className="tags-input">
               {formData.tags.map((tag, idx) => (
@@ -173,21 +176,25 @@ export default function ClauseLibrary({ onInsert }) {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <select
-          className="record-select"
-          value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
-        >
-          <option value="all">All Categories</option>
-          {CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
+        <span className="select-frame" style={{ minHeight: "46px" }}>
+          <select
+            className="record-select"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
+            <option value="all">All Categories</option>
+            {CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </span>
       </div>
 
       <div className="clause-library">
         {filteredClauses.length === 0 ? (
-          <p className="record-muted">No clauses in library. Add your first clause above.</p>
+          <p className="record-muted" style={{ padding: "20px", textAlign: "center" }}>
+            No clauses in library. Add your first clause above.
+          </p>
         ) : (
           filteredClauses.map((clause) => (
             <div key={clause.id} className="clause-card">

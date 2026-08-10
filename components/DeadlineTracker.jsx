@@ -37,7 +37,7 @@ export default function DeadlineTracker() {
     <div>
       <div className="record-header">
         <h3 className="record-title">Deadline Tracker</h3>
-        <span style={{ color: "var(--muted)" }}>
+        <span style={{ color: "var(--muted)", fontSize: "0.9rem" }}>
           {deadlines.length} deadline{deadlines.length !== 1 ? "s" : ""} detected
         </span>
       </div>

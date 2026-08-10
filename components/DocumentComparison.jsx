@@ -55,7 +55,8 @@ export default function DocumentComparison() {
             value={doc1.title}
             onChange={(e) => setDoc1({ ...doc1, title: e.target.value })}
             placeholder="Document 1 title"
-            style={{ width: "100%", padding: "8px", marginBottom: "10px", background: "var(--panel)", border: "1px solid var(--line)", color: "var(--text)" }}
+            className="record-search"
+            style={{ marginBottom: "10px" }}
           />
           <textarea
             value={doc1.text}
@@ -69,7 +70,8 @@ export default function DocumentComparison() {
             value={doc2.title}
             onChange={(e) => setDoc2({ ...doc2, title: e.target.value })}
             placeholder="Document 2 title"
-            style={{ width: "100%", padding: "8px", marginBottom: "10px", background: "var(--panel)", border: "1px solid var(--line)", color: "var(--text)" }}
+            className="record-search"
+            style={{ marginBottom: "10px" }}
           />
           <textarea
             value={doc2.text}
@@ -82,7 +84,8 @@ export default function DocumentComparison() {
       {result && (
         <div className="compare-results">
           <div style={{ padding: "16px", background: "var(--panel-2)", border: "2px solid var(--line)", marginBottom: "16px" }}>
-            <strong>Summary:</strong> {result.summary}
+            <strong style={{ color: "var(--paper)" }}>Summary:</strong>
+            <span style={{ color: "var(--muted)", marginLeft: "8px" }}>{result.summary}</span>
           </div>
 
           {result.added && result.added.length > 0 && (
@@ -92,7 +95,7 @@ export default function DocumentComparison() {
                 <div key={idx} className="compare-item compare-item-added">
                   <strong>{item.title}</strong>
                   <p style={{ color: "var(--muted)", fontSize: "0.9rem", marginTop: "4px" }}>{item.text}</p>
-                  <span className="badge" style={{ background: "var(--gold)", color: "#1a1a2e" }}>{item.impact} impact</span>
+                  <span className="badge badge-modified">{item.impact} impact</span>
                 </div>
               ))}
             </div>
@@ -105,7 +108,7 @@ export default function DocumentComparison() {
                 <div key={idx} className="compare-item compare-item-removed">
                   <strong>{item.title}</strong>
                   <p style={{ color: "var(--muted)", fontSize: "0.9rem", marginTop: "4px" }}>{item.text}</p>
-                  <span className="badge" style={{ background: "var(--gold)", color: "#1a1a2e" }}>{item.impact} impact</span>
+                  <span className="badge badge-modified">{item.impact} impact</span>
                 </div>
               ))}
             </div>
@@ -119,15 +122,15 @@ export default function DocumentComparison() {
                   <strong>{item.title}</strong>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "8px" }}>
                     <div>
-                      <div style={{ color: "var(--red)", fontSize: "0.8rem" }}>Original:</div>
+                      <div style={{ color: "var(--red)", fontSize: "0.8rem", fontWeight: 700 }}>Original:</div>
                       <p style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{item.original}</p>
                     </div>
                     <div>
-                      <div style={{ color: "var(--green)", fontSize: "0.8rem" }}>Revised:</div>
+                      <div style={{ color: "var(--green)", fontSize: "0.8rem", fontWeight: 700 }}>Revised:</div>
                       <p style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{item.revised}</p>
                     </div>
                   </div>
-                  <span className="badge" style={{ background: "var(--gold)", color: "#1a1a2e", marginTop: "8px" }}>{item.impact} impact</span>
+                  <span className="badge badge-modified" style={{ marginTop: "8px" }}>{item.impact} impact</span>
                 </div>
               ))}
             </div>
