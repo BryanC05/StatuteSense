@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { marked } from "marked";
 import DocumentHistory from "../components/DocumentHistory";
 import { saveDocument, saveAnalysis } from "../lib/storage";
+import { useTheme } from "./context/ThemeContext";
 
 const TASKS = [
   "Summarize the document and highlight key clauses.",
@@ -99,6 +100,14 @@ export default function HomePage() {
   const [isDragOver, setIsDragOver] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [saveStatus, setSaveStatus] = useState("");
+  const [model, setModel] = useState("");
+
+  useEffect(() => {
+    fetch("/api/model")
+      .then((r) => r.json())
+      .then((data) => setModel(data.model))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     let interval;
@@ -221,21 +230,13 @@ export default function HomePage() {
     <>
       <header className="app-header">
         <div className="header-brand">
-          <span className="brand-badge">SS</span>
-          <div>
-            <span className="header-logo-text">StatuteSense</span>
-            <span className="header-logo-kicker">Court Record AI</span>
-          </div>
+          <ScalesIcon className="header-logo-icon" />
+          <span className="header-logo-text">LEGALASSIST</span>
         </div>
-        <nav className="case-menu" aria-label="Primary case menu">
-          <a className="case-menu-link active" href="#case-file">Case File</a>
-          <a className="case-menu-link" href="#testimony">Testimony</a>
-          <a className="case-menu-link" href="#record">Record</a>
-        </nav>
         <div className="user-block">
           <div className="user-info">
-            <span className="user-label">Local Bench</span>
-            <span className="user-name">History saved on device</span>
+            <span className="user-label">AI Model</span>
+            <span className="user-name">{model || "Loading..."}</span>
           </div>
         </div>
       </header>
@@ -346,24 +347,28 @@ export default function HomePage() {
             <div className="meta-grid">
               <div className="field-row">
                 <label className="field-label">Evidence Type</label>
-                <select className="select-input" value={docType} onChange={(e) => setDocType(e.target.value)}>
-                  {DOCTYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
+                <span className="select-frame">
+                  <select className="select-input" value={docType} onChange={(e) => setDocType(e.target.value)}>
+                    {DOCTYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                </span>
               </div>
 
               <div className="field-row">
                 <label className="field-label">Cross-Examination</label>
-                <select className="select-input" value={task} onChange={(e) => setTask(e.target.value)}>
-                  {TASKS.map((taskOption) => (
-                    <option key={taskOption} value={taskOption}>
-                      {taskOption}
-                    </option>
-                  ))}
-                </select>
+                <span className="select-frame">
+                  <select className="select-input" value={task} onChange={(e) => setTask(e.target.value)}>
+                    {TASKS.map((taskOption) => (
+                      <option key={taskOption} value={taskOption}>
+                        {taskOption}
+                      </option>
+                    ))}
+                  </select>
+                </span>
               </div>
             </div>
 

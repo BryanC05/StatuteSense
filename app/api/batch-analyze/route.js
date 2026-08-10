@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import pdfParse from "pdf-parse";
-import { generateAnalysis } from "../../../lib/ai";
+import { generateAnalysis, getCurrentModel } from "../../../lib/ai";
 
 export async function POST(request) {
   const formData = await request.formData();
@@ -52,7 +52,7 @@ export async function POST(request) {
         },
         analysis: output,
         duration,
-        modelUsed: process.env.AI_PROVIDER || "huggingface",
+        modelUsed: getCurrentModel(),
       };
     } catch (error) {
       console.error(`Error processing ${file.name}:`, error);

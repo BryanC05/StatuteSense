@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import pdfParse from "pdf-parse";
-import { generateAnalysis } from "../../../lib/ai";
+import { generateAnalysis, getCurrentModel } from "../../../lib/ai";
 
 function buildAnalysisPrompt(documentText, task, docType) {
   return `You are an expert legal analyst. Analyze the following ${docType} and provide a clear response for the requested task.\n\nDocument:\n${documentText}\n\nTask:\n${task}\n\nReturn the answer in a structured format with headings where helpful.`;
@@ -36,11 +36,6 @@ export async function POST(request) {
     return NextResponse.json({ error: "Please provide document text or upload a PDF/text file." }, { status: 400 });
   }
 
-  const provider = (process.env.AI_PROVIDER || "huggingface").toLowerCase();
-  if (provider === "openai" && !process.env.OPENAI_API_KEY) {
-    return NextResponse.json({ error: "OPENAI_API_KEY is not configured (set AI_PROVIDER or provide the key)." }, { status: 500 });
-  }
-
   const prompt = buildAnalysisPrompt(finalText, task, docType);
 
   try {
@@ -59,7 +54,7 @@ export async function POST(request) {
         documentType: docType,
       },
       metadata: {
-        modelUsed: provider,
+        modelUsed: getCurrentModel(),
         duration,
       },
     });

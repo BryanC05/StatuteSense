@@ -82,18 +82,20 @@ export default function DocumentHistory({ onDocumentSelect }) {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="record-search"
         />
-        <select
-          value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-          className="record-select"
-        >
-          <option value="all">All Types</option>
-          <option value="Contract">Contract</option>
-          <option value="NDA">NDA</option>
-          <option value="Lease">Lease</option>
-          <option value="Privacy Policy">Privacy Policy</option>
-          <option value="Other">Other</option>
-        </select>
+        <span className="select-frame record-select-frame">
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="record-select"
+          >
+            <option value="all">All Types</option>
+            <option value="Contract">Contract</option>
+            <option value="NDA">NDA</option>
+            <option value="Lease">Lease</option>
+            <option value="Privacy Policy">Privacy Policy</option>
+            <option value="Other">Other</option>
+          </select>
+        </span>
       </div>
 
       <div className="record-list">
