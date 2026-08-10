@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getFolders, saveFolder, updateFolder, deleteFolder } from "../lib/storage";
+import CustomSelect from "./CustomSelect";
 
 const COLORS = ["#f4c04f", "#c72f2f", "#2b5f9f", "#22c55e", "#74d8f5", "#f97316", "#a855f7"];
 
@@ -74,18 +75,13 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
             className="record-search"
             style={{ flex: 1, minWidth: "150px" }}
           />
-          <span className="select-frame" style={{ minWidth: "100px" }}>
-            <select
-              className="select-input"
-              value={formData.color}
-              onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-              style={{ padding: "6px 40px 6px 10px" }}
-            >
-              {COLORS.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          </span>
+          <CustomSelect
+            compact
+            options={COLORS.map((c) => ({ value: c, label: c }))}
+            value={formData.color}
+            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+            style={{ minWidth: "120px" }}
+          />
           <button className="record-primary-btn" onClick={handleSave} style={{ padding: "6px 12px" }}>
             {editingId ? "Update" : "Add"}
           </button>

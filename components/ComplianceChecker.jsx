@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import CustomSelect from "./CustomSelect";
 
 const FRAMEWORKS = [
   { id: "gdpr", name: "GDPR", description: "EU General Data Protection Regulation" },
@@ -42,17 +43,12 @@ export default function ComplianceChecker({ documentText }) {
       </div>
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap", alignItems: "center" }}>
-        <span className="select-frame">
-          <select
-            className="select-input"
-            value={selectedFramework}
-            onChange={(e) => setSelectedFramework(e.target.value)}
-          >
-            {FRAMEWORKS.map((fw) => (
-              <option key={fw.id} value={fw.id}>{fw.name}</option>
-            ))}
-          </select>
-        </span>
+        <CustomSelect
+          options={FRAMEWORKS.map((fw) => ({ value: fw.id, label: fw.name }))}
+          value={selectedFramework}
+          onChange={(e) => setSelectedFramework(e.target.value)}
+          style={{ minWidth: "160px" }}
+        />
         <button
           className="record-primary-btn"
           onClick={checkCompliance}

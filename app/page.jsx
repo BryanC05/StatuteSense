@@ -12,6 +12,7 @@ import DeadlineTracker from "../components/DeadlineTracker";
 import CustomPromptManager from "../components/CustomPromptManager";
 import AnalyticsDashboard from "../components/AnalyticsDashboard";
 import SearchBar from "../components/SearchBar";
+import CustomSelect from "../components/CustomSelect";
 import { saveDocument, saveAnalysis, getAnalyses } from "../lib/storage";
 import { useTheme } from "./context/ThemeContext";
 
@@ -357,39 +358,27 @@ export default function HomePage() {
                 <div className="meta-grid">
                   <div className="field-row">
                     <label className="field-label">Evidence Type</label>
-                    <span className="select-frame">
-                      <select className="select-input" value={docType} onChange={(e) => setDocType(e.target.value)}>
-                        {DOCTYPES.map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
-                    </span>
+                    <CustomSelect
+                      options={DOCTYPES}
+                      value={docType}
+                      onChange={(e) => setDocType(e.target.value)}
+                    />
                   </div>
 
                   <div className="field-row">
                     <label className="field-label">Preset Task</label>
-                    <span className="select-frame">
-                      <select
-                        className="select-input"
-                        value={TASKS.includes(task) ? task : "custom"}
-                        onChange={(e) => {
-                          if (e.target.value !== "custom") {
-                            setTask(e.target.value);
-                          }
-                        }}
-                      >
-                        {TASKS.map((taskOption) => (
-                          <option key={taskOption} value={taskOption}>
-                            {taskOption}
-                          </option>
-                        ))}
-                        {!TASKS.includes(task) && (
-                          <option value="custom">Custom Directive</option>
-                        )}
-                      </select>
-                    </span>
+                    <CustomSelect
+                      options={[
+                        ...TASKS.map((t) => ({ value: t, label: t })),
+                        { value: "custom", label: "Custom Directive" }
+                      ]}
+                      value={TASKS.includes(task) ? task : "custom"}
+                      onChange={(e) => {
+                        if (e.target.value !== "custom") {
+                          setTask(e.target.value);
+                        }
+                      }}
+                    />
                   </div>
                 </div>
 

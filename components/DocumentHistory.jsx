@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getDocuments, getAnalyses, deleteDocument, getFolders, updateDocument } from "../lib/storage";
 import FolderManager from "./FolderManager";
+import CustomSelect from "./CustomSelect";
 
 export default function DocumentHistory({ onDocumentSelect }) {
   const [documents, setDocuments] = useState([]);
@@ -50,22 +51,13 @@ export default function DocumentHistory({ onDocumentSelect }) {
 
   const handleQuickReAnalyze = (doc) => {
     if (onDocumentSelect) {
-      onDocumentSelect({
-        text: doc.originalText,
-        type: doc.documentType,
-        title: doc.title,
-      });
+      onDocumentSelect(doc);
     }
   };
 
   const handleViewAnalysis = (doc) => {
     if (onDocumentSelect) {
-      const analysisText = doc.analyses?.[0]?.result || "No analysis available";
-      onDocumentSelect({
-        text: `Original Document:\n\n${doc.originalText}\n\n---\n\nAI Analysis:\n\n${analysisText}`,
-        type: doc.documentType,
-        title: doc.title + " (with analysis)",
-      });
+      onDocumentSelect(doc);
     }
   };
 
@@ -116,20 +108,18 @@ export default function DocumentHistory({ onDocumentSelect }) {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="record-search"
         />
-        <span className="select-frame">
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="record-select"
-          >
-            <option value="all">All Types</option>
-            <option value="Contract">Contract</option>
-            <option value="NDA">NDA</option>
-            <option value="Lease">Lease</option>
-            <option value="Privacy Policy">Privacy Policy</option>
-            <option value="Other">Other</option>
-          </select>
-        </span>
+        <CustomSelect
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+          options={[
+            { value: "all", label: "All Types" },
+            { value: "Contract", label: "Contract" },
+            { value: "NDA", label: "NDA" },
+            { value: "Lease", label: "Lease" },
+            { value: "Privacy Policy", label: "Privacy Policy" },
+            { value: "Other", label: "Other" }
+          ]}
+        />
       </div>
 
       <div className="record-list">
@@ -164,22 +154,19 @@ export default function DocumentHistory({ onDocumentSelect }) {
                   </p>
                 </div>
                 <div className="record-actions">
-                  <span className="select-frame">
-                    <select
-                      value={doc.folderId || ""}
-                      onChange={(e) => {
-                        updateDocument(doc.id, { folderId: e.target.value || null });
-                        fetchDocuments();
-                      }}
-                      className="select-input"
-                      style={{ padding: "6px 40px 6px 10px", fontSize: "0.75rem" }}
-                    >
-                      <option value="">No Folder</option>
-                      {folders.map((f) => (
-                        <option key={f.id} value={f.id}>{f.name}</option>
-                      ))}
-                    </select>
-                  </span>
+                  <CustomSelect
+                    compact
+                    value={doc.folderId || ""}
+                    onChange={(e) => {
+                      updateDocument(doc.id, { folderId: e.target.value || null });
+                      fetchDocuments();
+                    }}
+                    options={[
+                      { value: "", label: "No Folder" },
+                      ...folders.map((f) => ({ value: f.id, label: f.name }))
+                    ]}
+                    style={{ minWidth: "120px" }}
+                  />
                   <button onClick={() => handleQuickReAnalyze(doc)} className="record-primary-btn">
                     Reopen
                   </button>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getPrompts, savePrompt, deletePrompt } from '../lib/storage';
+import CustomSelect from './CustomSelect';
 
 const CATEGORIES = ['Summarize', 'Risk Analysis', 'Compliance', 'Extraction', 'Comparison', 'Custom'];
 
@@ -88,17 +89,11 @@ export default function CustomPromptManager({ onSelectPrompt }) {
           </div>
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: '#ccc' }}>Category</label>
-            <span className="select-frame">
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="select-input"
-              >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-            </span>
+            <CustomSelect
+              options={CATEGORIES}
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            />
           </div>
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: '#ccc' }}>Description</label>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getClauses, saveClause, updateClause, deleteClause } from "../lib/storage";
+import CustomSelect from "./CustomSelect";
 
 const CATEGORIES = [
   "Termination",
@@ -116,17 +117,11 @@ export default function ClauseLibrary({ onInsert }) {
           </div>
           <div className="field-group">
             <label className="field-label">Category</label>
-            <span className="select-frame">
-              <select
-                className="select-input"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-            </span>
+            <CustomSelect
+              options={CATEGORIES}
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            />
           </div>
           <div className="field-group">
             <label className="field-label">Content</label>
@@ -176,18 +171,11 @@ export default function ClauseLibrary({ onInsert }) {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <span className="select-frame">
-          <select
-            className="record-select"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option value="all">All Categories</option>
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-        </span>
+        <CustomSelect
+          options={[{ value: "all", label: "All Categories" }, ...CATEGORIES.map(cat => ({ value: cat, label: cat }))]}
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+        />
       </div>
 
       <div className="clause-library">
