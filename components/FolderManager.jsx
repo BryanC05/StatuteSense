@@ -74,11 +74,12 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
             className="record-search"
             style={{ flex: 1, minWidth: "150px" }}
           />
-          <span className="select-frame compact" style={{ minWidth: "100px" }}>
+          <span className="select-frame" style={{ minWidth: "100px" }}>
             <select
-              className="select-input compact"
+              className="select-input"
               value={formData.color}
               onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+              style={{ padding: "6px 40px 6px 10px" }}
             >
               {COLORS.map((c) => (
                 <option key={c} value={c}>{c}</option>
