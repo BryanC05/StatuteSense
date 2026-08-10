@@ -1,0 +1,35 @@
+# StatuteSense — Development Task Checklist
+
+- [x] 1. Ace Attorney Courtroom UI & Design System (`styles/globals.css` & `app/page.jsx`)
+  - [x] Dark/Light mode theme system with Defense Blue (`#1d70f5`), Prosecution Crimson (`#e01b24`), and Attorney Gold (`#ffcb3d`)
+  - [x] Speedline canvas backdrop & 3D speech burst action buttons
+  - [x] Horizontal Court Hero Strip with Golden Attorney Star Badge emblem
+  - [x] Responsive clean pill tab navigation bar (`.tab-bar-clean`)
+- [x] 2. Court AI Disclaimer Warning System
+  - [x] Red-bordered **`COURT AI ADVISORY`** banner in brief viewer
+  - [x] Compact warning banner in Chat chamber
+  - [x] Global legal disclaimer in footer
+- [x] 3. Anti-Hallucination & Verified Legal Citation Engine (`lib/ai.js` & `app/api/analyze/route.js`)
+  - [x] System prompt anti-hallucination rules prohibiting fake reporter volume/page citations
+  - [x] Verified citation bank (DTSA 18 U.S.C. § 1836, Restatement Second § 71/75, E.I. du Pont, Rockwell, Silvaco)
+  - [x] Mandatory `### 📜 Validated Legal Sources & Case Law References` section
+- [x] 4. Contextual Scope Logic & RAG JSON Legal Schema
+  - [x] UCC Article 2 scope check (only cite if tangible goods involved)
+  - [x] GDPR Art. 6 / CCPA scope check (only flag if PII / personal data present)
+  - [x] RAG vector store JSON Legal Schema output block (`document_type`, `meta`, `clauses`, `legal_citations`)
+- [x] 5. Case Follow-Up Interrogation System (`components/ChatInterface.jsx` & `components/DocumentHistory.jsx`)
+  - [x] `💬 FOLLOW-UP INTERROGATION` action in brief viewer header & bottom banner
+  - [x] `💬 Interrogate` action button on Court Record history items
+  - [x] Loaded case header banner (`📜 ACTIVE INTERROGATION RECORD: [Title]`)
+  - [x] 1-Click quick interrogation prompt chips
+- [x] 6. Tailored Feature Tab Layout Adjustments
+  - [x] Configured courtroom section badges & titles across all 10 feature tabs
+- [x] 7. Advanced 6-Feature Suite Implementation
+  - [x] ⚡ **"OBJECTION!" Contradiction Detector** (`components/ContradictionDetector.jsx` & `/api/contradictions`)
+  - [x] ⚔️ **Defense Clause Redline Rewriter** (`components/ClauseRedliner.jsx` & `/api/rewrite`)
+  - [x] 📜 **Multi-Jurisdiction Selector** (`components/JurisdictionSelector.jsx` for US, CA, NY, DE, EU, UK)
+  - [x] 🏛️ **Jury-Friendly Plain English Translator** (`components/PlainEnglishTranslator.jsx` & `/api/translate`)
+  - [x] 📄 **Official Court Brief PDF Exporter** (`lib/pdfExport.js`)
+  - [x] 📁 **Batch Evidence Portfolio Analyzer** (`components/BatchAnalyzer.jsx` & `/api/batch-analyze`)
+- [x] 8. Verification & Production Build
+  - [x] Verified clean compilation with `npm run build` (15 static routes, 0 errors)
