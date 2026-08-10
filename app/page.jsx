@@ -13,6 +13,12 @@ import CustomPromptManager from "../components/CustomPromptManager";
 import AnalyticsDashboard from "../components/AnalyticsDashboard";
 import SearchBar from "../components/SearchBar";
 import CustomSelect from "../components/CustomSelect";
+import JurisdictionSelector from "../components/JurisdictionSelector";
+import ContradictionDetector from "../components/ContradictionDetector";
+import ClauseRedliner from "../components/ClauseRedliner";
+import PlainEnglishTranslator from "../components/PlainEnglishTranslator";
+import BatchAnalyzer from "../components/BatchAnalyzer";
+import { exportToPDF } from "../lib/pdfExport";
 import { saveDocument, saveAnalysis, getAnalyses } from "../lib/storage";
 import { useTheme } from "./context/ThemeContext";
 
@@ -133,6 +139,7 @@ export default function HomePage() {
   const [model, setModel] = useState("");
   const [activeTab, setActiveTab] = useState("desk");
   const [activeDocument, setActiveDocument] = useState(null);
+  const [jurisdiction, setJurisdiction] = useState("US Federal");
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
@@ -247,7 +254,7 @@ export default function HomePage() {
     } else {
       formData.append("text", text);
     }
-    formData.append("task", task);
+    formData.append("task", `${task} [Governing Jurisdiction: ${jurisdiction}]`);
     formData.append("docType", docType);
 
     try {
@@ -377,13 +384,21 @@ export default function HomePage() {
                   </div>
                 )}
 
-                <div className="meta-grid">
+                <div className="meta-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px" }}>
                   <div className="field-row">
                     <label className="field-label">Evidence Type</label>
                     <CustomSelect
                       options={DOCTYPES}
                       value={docType}
                       onChange={(e) => setDocType(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="field-row">
+                    <label className="field-label">Governing Jurisdiction</label>
+                    <JurisdictionSelector
+                      value={jurisdiction}
+                      onChange={setJurisdiction}
                     />
                   </div>
 
@@ -451,6 +466,13 @@ export default function HomePage() {
                   </h2>
                   {response && !loading && (
                     <div className="viewer-actions" style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                      <button
+                        className="record-primary-btn"
+                        onClick={() => exportToPDF(activeDocument?.title || "Official Court Brief", marked.parse(response))}
+                        style={{ minHeight: "36px", padding: "4px 12px", fontSize: "0.88rem" }}
+                      >
+                        📄 EXPORT PDF DOCKET
+                      </button>
                       <button
                         onClick={() => handleAskFollowUp(activeDocument || { title: activeDocument?.title || "Current Case Brief", originalText: text })}
                         className="record-primary-btn"
@@ -535,6 +557,10 @@ export default function HomePage() {
                           ASK FOLLOW-UP QUESTION
                         </button>
                       </div>
+
+                      <div style={{ marginTop: "24px" }}>
+                        <PlainEnglishTranslator documentText={response || text} />
+                      </div>
                     </>
                   ) : (
                     <div className="empty-state" style={{ border: "2px dashed var(--gold)", minHeight: "380px" }}>
@@ -558,10 +584,10 @@ export default function HomePage() {
         );
       case "chat":
         return (
-          <div className="panel" style={{ padding: "24px" }}>
+          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
             <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">💬</span>
-              <h2 className="panel-title">Interactive Chat</h2>
+              <span className="panel-number">WITNESS STAND</span>
+              <h2 className="panel-title">CROSS-EXAMINATION & WITNESS INTERROGATION CHAMBER</h2>
             </div>
             <ChatInterface
               documentText={text}
@@ -572,66 +598,82 @@ export default function HomePage() {
         );
       case "compare":
         return (
-          <div className="panel" style={{ padding: "24px" }}>
+          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
             <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">🔍</span>
-              <h2 className="panel-title">Document Comparison</h2>
+              <span className="panel-number">EVIDENCE DIFF</span>
+              <h2 className="panel-title">EXHIBIT A vs EXHIBIT B COMPARISON BENCH</h2>
             </div>
             <DocumentComparison />
+            <div style={{ marginTop: "30px", borderTop: "2px dashed var(--gold)", paddingTop: "24px" }}>
+              <BatchAnalyzer onDocumentSelect={handleDocumentSelect} />
+            </div>
           </div>
         );
       case "risk":
         return (
-          <div className="panel" style={{ padding: "24px" }}>
+          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
             <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">🛡️</span>
-              <h2 className="panel-title">Risk Assessment</h2>
+              <span className="panel-number">THREAT SCORE</span>
+              <h2 className="panel-title">PROSECUTION THREAT RADAR & RISK SCORE</h2>
             </div>
-            <RiskAnalyzer documentText={text} />
+            <ContradictionDetector documentText={text} jurisdiction={jurisdiction} />
+            <div style={{ marginTop: "24px", borderTop: "2px dashed var(--gold)", paddingTop: "24px" }}>
+              <RiskAnalyzer documentText={text} />
+            </div>
           </div>
         );
       case "compliance":
         return (
-          <div className="panel" style={{ padding: "24px" }}>
+          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
             <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">✅</span>
-              <h2 className="panel-title">Compliance Verification</h2>
+              <span className="panel-number">STATUTE CHECK</span>
+              <h2 className="panel-title">VERDICT & STATUTORY COMPLIANCE CHECK</h2>
             </div>
             <ComplianceChecker documentText={text} />
           </div>
         );
       case "clauses":
         return (
-          <div className="panel" style={{ padding: "24px" }}>
+          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
             <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">📖</span>
-              <h2 className="panel-title">Clause Library</h2>
+              <span className="panel-number">PRECEDENTS</span>
+              <h2 className="panel-title">PRECEDENT ARCHIVE & CLAUSE BANK</h2>
             </div>
-            <ClauseLibrary
-              onInsert={(clauseText) => {
-                setText((prev) => (prev ? prev + "\n\n" + clauseText : clauseText));
+            <ClauseRedliner
+              jurisdiction={jurisdiction}
+              onInsertRewrite={(rewriteText) => {
+                setText((prev) => (prev ? prev + "\n\n" + rewriteText : rewriteText));
                 setActiveTab("desk");
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             />
+            <div style={{ marginTop: "24px", borderTop: "2px dashed var(--gold)", paddingTop: "24px" }}>
+              <ClauseLibrary
+                onInsert={(clauseText) => {
+                  setText((prev) => (prev ? prev + "\n\n" + clauseText : clauseText));
+                  setActiveTab("desk");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              />
+            </div>
           </div>
         );
       case "deadlines":
         return (
-          <div className="panel" style={{ padding: "24px" }}>
+          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
             <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">📅</span>
-              <h2 className="panel-title">Deadline Tracker</h2>
+              <span className="panel-number">COUNTDOWN</span>
+              <h2 className="panel-title">STATUTE OF LIMITATIONS & DEADLINE CLOCK</h2>
             </div>
             <DeadlineTracker />
           </div>
         );
       case "prompts":
         return (
-          <div className="panel" style={{ padding: "24px" }}>
+          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
             <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">🛠️</span>
-              <h2 className="panel-title">Custom Prompts</h2>
+              <span className="panel-number">STRATEGY</span>
+              <h2 className="panel-title">DEFENSE DIRECTIVES & STRATEGY PROMPTS</h2>
             </div>
             <CustomPromptManager
               onSelectPrompt={(promptText) => {
@@ -644,26 +686,26 @@ export default function HomePage() {
         );
       case "analytics":
         return (
-          <div className="panel" style={{ padding: "24px" }}>
+          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
             <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">📊</span>
-              <h2 className="panel-title">Analytics Dashboard</h2>
+              <span className="panel-number">METRICS</span>
+              <h2 className="panel-title">TRIAL & EVIDENCE RECORD ANALYTICS</h2>
             </div>
             <AnalyticsDashboard />
           </div>
         );
       case "search":
         return (
-          <div className="panel" style={{ padding: "24px" }}>
+          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
             <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">📂</span>
-              <h2 className="panel-title">Explorer & Search</h2>
+              <span className="panel-number">VAULT ARCHIVE</span>
+              <h2 className="panel-title">OFFICIAL EVIDENCE VAULT & SEARCH</h2>
             </div>
             <SearchBar
               onDocumentSelect={handleDocumentSelect}
             />
             <div style={{ marginTop: "30px" }}>
-              <DocumentHistory onDocumentSelect={handleDocumentSelect} />
+              <DocumentHistory onDocumentSelect={handleDocumentSelect} onInterrogate={handleAskFollowUp} />
             </div>
           </div>
         );
