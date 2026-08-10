@@ -3,7 +3,16 @@
 import { useState, useEffect } from "react";
 import { marked } from "marked";
 import DocumentHistory from "../components/DocumentHistory";
-import { saveDocument, saveAnalysis } from "../lib/storage";
+import ChatInterface from "../components/ChatInterface";
+import DocumentComparison from "../components/DocumentComparison";
+import ComplianceChecker from "../components/ComplianceChecker";
+import RiskAnalyzer from "../components/RiskAnalyzer";
+import ClauseLibrary from "../components/ClauseLibrary";
+import DeadlineTracker from "../components/DeadlineTracker";
+import CustomPromptManager from "../components/CustomPromptManager";
+import AnalyticsDashboard from "../components/AnalyticsDashboard";
+import SearchBar from "../components/SearchBar";
+import { saveDocument, saveAnalysis, getAnalyses } from "../lib/storage";
 import { useTheme } from "./context/ThemeContext";
 
 const TASKS = [
@@ -80,12 +89,18 @@ const InfoIcon = ({ className }) => (
   </svg>
 );
 
-const TrashIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="3 6 5 6 21 6" />
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-  </svg>
-);
+const TABS = [
+  { id: "desk", label: "Analysis Desk", icon: "⚖️" },
+  { id: "chat", label: "Document Chat", icon: "💬" },
+  { id: "compare", label: "Comparison", icon: "🔍" },
+  { id: "risk", label: "Risk Assessment", icon: "🛡️" },
+  { id: "compliance", label: "Compliance", icon: "✅" },
+  { id: "clauses", label: "Clause Library", icon: "📖" },
+  { id: "deadlines", label: "Deadlines", icon: "📅" },
+  { id: "prompts", label: "Custom Prompts", icon: "🛠️" },
+  { id: "analytics", label: "Analytics", icon: "📊" },
+  { id: "search", label: "Explorer & Search", icon: "📂" },
+];
 
 export default function HomePage() {
   const [text, setText] = useState("");
@@ -101,6 +116,9 @@ export default function HomePage() {
   const [loadingStep, setLoadingStep] = useState(0);
   const [saveStatus, setSaveStatus] = useState("");
   const [model, setModel] = useState("");
+  const [activeTab, setActiveTab] = useState("desk");
+  const [activeDocument, setActiveDocument] = useState(null);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     fetch("/api/model")
@@ -134,6 +152,7 @@ export default function HomePage() {
     setResponse("");
     setError("");
     setSaveStatus("");
+    setActiveDocument(null);
   };
 
   const onDragOver = (e) => {
@@ -164,6 +183,22 @@ export default function HomePage() {
     if (selectedFile) {
       setFile(selectedFile);
     }
+  };
+
+  const handleDocumentSelect = (doc) => {
+    setActiveDocument(doc);
+    setText(doc.originalText || doc.text || "");
+    setDocType(doc.documentType || doc.type || "Other");
+    
+    setResponse("");
+    if (doc.id) {
+      const docAnalyses = getAnalyses(doc.id);
+      if (docAnalyses && docAnalyses.length > 0) {
+        setResponse(docAnalyses[0].result);
+      }
+    }
+    setActiveTab("desk");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSubmit = async (event) => {
@@ -214,6 +249,7 @@ export default function HomePage() {
             duration: data.metadata.duration,
           });
           setSaveStatus("Analysis saved to local history");
+          setActiveDocument(savedDoc);
         }
       }
     } catch (err) {
@@ -226,14 +262,370 @@ export default function HomePage() {
   const wordCount = inputMode === "paste" ? text.trim().split(/\s+/).filter(Boolean).length : 0;
   const estimatedReadingTime = Math.max(1, Math.ceil(wordCount / 200));
 
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "desk":
+        return (
+          <>
+            <div className="dashboard-grid">
+              <form id="case-file" className="panel editor-panel" onSubmit={handleSubmit}>
+                <div className="panel-heading">
+                  <span className="panel-number">01</span>
+                  <h2 className="panel-title">Case File</h2>
+                </div>
+
+                <div className="tab-bar">
+                  <button
+                    type="button"
+                    className={`tab-btn ${inputMode === "paste" ? "active" : ""}`}
+                    onClick={() => setInputMode("paste")}
+                  >
+                    Testimony
+                  </button>
+                  <button
+                    type="button"
+                    className={`tab-btn ${inputMode === "upload" ? "active" : ""}`}
+                    onClick={() => setInputMode("upload")}
+                  >
+                    Evidence
+                  </button>
+                </div>
+
+                {inputMode === "paste" ? (
+                  <div className="field-group">
+                    <textarea
+                      className="editor-textarea"
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      placeholder="Paste the contract, policy, or clause bundle here..."
+                    />
+                    {text && (
+                      <div className="editor-stats">
+                        <span>{wordCount} words</span>
+                        <span>~{estimatedReadingTime} min read</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="field-group">
+                    <label
+                      htmlFor="file-upload"
+                      className={`dropzone ${isDragOver ? "dragover" : ""} ${file ? "has-file" : ""}`}
+                      onDragOver={onDragOver}
+                      onDragLeave={onDragLeave}
+                      onDrop={onDrop}
+                    >
+                      <input
+                        id="file-upload"
+                        type="file"
+                        accept=".pdf,.txt"
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
+                      />
+                      {file ? (
+                        <>
+                          <FileIcon className="dropzone-icon active" />
+                          <div className="file-info-box">
+                            <span className="file-name">{file.name}</span>
+                            <span className="file-size">({(file.size / 1024).toFixed(1)} KB)</span>
+                          </div>
+                          <button
+                            type="button"
+                            className="remove-file-btn"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setFile(null);
+                            }}
+                          >
+                            <CloseIcon className="remove-icon" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <UploadIcon className="dropzone-icon" />
+                          <div className="dropzone-text">
+                            <span className="highlight">Present evidence</span> or drag & drop
+                          </div>
+                          <span className="dropzone-sub">PDF or Plain Text (up to 10MB)</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                )}
+
+                <div className="meta-grid">
+                  <div className="field-row">
+                    <label className="field-label">Evidence Type</label>
+                    <span className="select-frame">
+                      <select className="select-input" value={docType} onChange={(e) => setDocType(e.target.value)}>
+                        {DOCTYPES.map((type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                    </span>
+                  </div>
+
+                  <div className="field-row">
+                    <label className="field-label">Preset Task</label>
+                    <span className="select-frame">
+                      <select
+                        className="select-input"
+                        value={TASKS.includes(task) ? task : "custom"}
+                        onChange={(e) => {
+                          if (e.target.value !== "custom") {
+                            setTask(e.target.value);
+                          }
+                        }}
+                      >
+                        {TASKS.map((taskOption) => (
+                          <option key={taskOption} value={taskOption}>
+                            {taskOption}
+                          </option>
+                        ))}
+                        {!TASKS.includes(task) && (
+                          <option value="custom">Custom Directive</option>
+                        )}
+                      </select>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="field-group" style={{ marginTop: "15px" }}>
+                  <label className="field-label">Analysis Directive (Prompt)</label>
+                  <textarea
+                    className="editor-textarea"
+                    style={{ minHeight: "80px" }}
+                    value={task}
+                    onChange={(e) => setTask(e.target.value)}
+                    placeholder="Specify what the AI should analyze or ask..."
+                  />
+                </div>
+
+                <div className="btn-group">
+                  <button type="submit" className="run-btn" disabled={loading}>
+                    {loading ? (
+                      <span className="loading-spinner-btn">Pressing the Record...</span>
+                    ) : (
+                      "Start Cross-Examination"
+                    )}
+                  </button>
+                  <button type="button" className="clear-btn" onClick={handleClear} disabled={loading}>
+                    Clear
+                  </button>
+                </div>
+
+                {error && (
+                  <div className="alert error">
+                    <InfoIcon className="alert-icon" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {saveStatus && (
+                  <div className="alert success">
+                    <CheckIcon className="alert-icon" />
+                    <span>{saveStatus}</span>
+                  </div>
+                )}
+              </form>
+
+              <section id="testimony" className="panel viewer-panel">
+                <div className="viewer-header">
+                  <h2 className="viewer-title">
+                    <ScalesIcon className="panel-title-icon" />
+                    Testimony Board
+                  </h2>
+                  {response && !loading && (
+                    <div className="viewer-actions">
+                      <button
+                        className={`action-icon-btn ${copied ? "success" : ""}`}
+                        onClick={handleCopy}
+                        title={copied ? "Copied" : "Copy to Clipboard"}
+                      >
+                        {copied ? <CheckIcon className="action-icon" /> : <CopyIcon className="action-icon" />}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="viewer-scroll-container">
+                  {loading ? (
+                    <div className="skeleton-loader">
+                      <div className="skeleton-line h"></div>
+                      <div className="skeleton-line p1"></div>
+                      <div className="skeleton-line p2"></div>
+                      <div className="skeleton-line p3"></div>
+                      <div className="skeleton-line p1"></div>
+                      <div className="skeleton-line p2"></div>
+                      <div className="skeleton-line p4"></div>
+                      <div className="loading-step-text">
+                        {LOADING_STEPS[loadingStep]}
+                      </div>
+                    </div>
+                  ) : response ? (
+                    <div
+                      className="markdown-content"
+                      dangerouslySetInnerHTML={{ __html: marked.parse(response) }}
+                    />
+                  ) : (
+                    <div className="empty-state">
+                      <ScalesIcon className="empty-state-icon" />
+                      <div className="empty-state-title">The bench is waiting.</div>
+                      <p className="empty-state-desc">
+                        Submit testimony or evidence to produce a structured legal brief.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </section>
+            </div>
+
+            <section id="record" className="history-shell" style={{ marginTop: "30px" }}>
+              <DocumentHistory onDocumentSelect={handleDocumentSelect} />
+            </section>
+          </>
+        );
+      case "chat":
+        return (
+          <div className="panel" style={{ padding: "24px" }}>
+            <div className="panel-heading" style={{ marginBottom: "20px" }}>
+              <span className="panel-number">💬</span>
+              <h2 className="panel-title">Interactive Chat</h2>
+            </div>
+            <ChatInterface
+              documentText={text}
+              documentId={activeDocument ? activeDocument.id : "global"}
+            />
+          </div>
+        );
+      case "compare":
+        return (
+          <div className="panel" style={{ padding: "24px" }}>
+            <div className="panel-heading" style={{ marginBottom: "20px" }}>
+              <span className="panel-number">🔍</span>
+              <h2 className="panel-title">Document Comparison</h2>
+            </div>
+            <DocumentComparison />
+          </div>
+        );
+      case "risk":
+        return (
+          <div className="panel" style={{ padding: "24px" }}>
+            <div className="panel-heading" style={{ marginBottom: "20px" }}>
+              <span className="panel-number">🛡️</span>
+              <h2 className="panel-title">Risk Assessment</h2>
+            </div>
+            <RiskAnalyzer documentText={text} />
+          </div>
+        );
+      case "compliance":
+        return (
+          <div className="panel" style={{ padding: "24px" }}>
+            <div className="panel-heading" style={{ marginBottom: "20px" }}>
+              <span className="panel-number">✅</span>
+              <h2 className="panel-title">Compliance Verification</h2>
+            </div>
+            <ComplianceChecker documentText={text} />
+          </div>
+        );
+      case "clauses":
+        return (
+          <div className="panel" style={{ padding: "24px" }}>
+            <div className="panel-heading" style={{ marginBottom: "20px" }}>
+              <span className="panel-number">📖</span>
+              <h2 className="panel-title">Clause Library</h2>
+            </div>
+            <ClauseLibrary
+              onInsert={(clauseText) => {
+                setText((prev) => (prev ? prev + "\n\n" + clauseText : clauseText));
+                setActiveTab("desk");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+          </div>
+        );
+      case "deadlines":
+        return (
+          <div className="panel" style={{ padding: "24px" }}>
+            <div className="panel-heading" style={{ marginBottom: "20px" }}>
+              <span className="panel-number">📅</span>
+              <h2 className="panel-title">Deadline Tracker</h2>
+            </div>
+            <DeadlineTracker />
+          </div>
+        );
+      case "prompts":
+        return (
+          <div className="panel" style={{ padding: "24px" }}>
+            <div className="panel-heading" style={{ marginBottom: "20px" }}>
+              <span className="panel-number">🛠️</span>
+              <h2 className="panel-title">Custom Prompts</h2>
+            </div>
+            <CustomPromptManager
+              onSelectPrompt={(promptText) => {
+                setTask(promptText);
+                setActiveTab("desk");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+          </div>
+        );
+      case "analytics":
+        return (
+          <div className="panel" style={{ padding: "24px" }}>
+            <div className="panel-heading" style={{ marginBottom: "20px" }}>
+              <span className="panel-number">📊</span>
+              <h2 className="panel-title">Analytics Dashboard</h2>
+            </div>
+            <AnalyticsDashboard />
+          </div>
+        );
+      case "search":
+        return (
+          <div className="panel" style={{ padding: "24px" }}>
+            <div className="panel-heading" style={{ marginBottom: "20px" }}>
+              <span className="panel-number">📂</span>
+              <h2 className="panel-title">Explorer & Search</h2>
+            </div>
+            <SearchBar
+              onDocumentSelect={handleDocumentSelect}
+            />
+            <div style={{ marginTop: "30px" }}>
+              <DocumentHistory onDocumentSelect={handleDocumentSelect} />
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <header className="app-header">
         <div className="header-brand">
           <ScalesIcon className="header-logo-icon" />
-          <span className="header-logo-text">LEGALASSIST</span>
+          <span className="header-logo-text">StatuteSense</span>
         </div>
-        <div className="user-block">
+        <div className="user-block" style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+          <button
+            onClick={toggleTheme}
+            className="clear-btn"
+            style={{
+              padding: "6px 12px",
+              minHeight: "34px",
+              fontSize: "0.85rem",
+              background: "transparent",
+              border: "1px solid var(--line)",
+              color: "var(--muted)",
+              cursor: "pointer",
+            }}
+          >
+            {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
+          </button>
           <div className="user-info">
             <span className="user-label">AI Model</span>
             <span className="user-name">{model || "Loading..."}</span>
@@ -244,7 +636,7 @@ export default function HomePage() {
       <main className="dashboard-container">
         <section className="court-hero" aria-labelledby="case-title">
           <div className="court-hero-copy">
-            <span className="case-stamp">New Evidence</span>
+            <span className="case-stamp">Intelligence Brief</span>
             <h1 id="case-title">Build the argument before the clock strikes.</h1>
             <p>
               Feed StatuteSense a document and get a structured brief with clauses,
@@ -253,211 +645,56 @@ export default function HomePage() {
           </div>
           <div className="court-hero-meter" aria-label="Case readiness">
             <span>Case Readiness</span>
-            <strong>Standby</strong>
+            <strong>{activeDocument ? "Ready" : "Standby"}</strong>
           </div>
         </section>
 
-        <div className="dashboard-grid">
-          <form id="case-file" className="panel editor-panel" onSubmit={handleSubmit}>
-            <div className="panel-heading">
-              <span className="panel-number">01</span>
-              <h2 className="panel-title">Case File</h2>
+        {activeDocument && (
+          <div className="active-doc-banner" style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "12px 20px",
+            background: "linear-gradient(90deg, rgba(244, 192, 79, 0.15), rgba(244, 192, 79, 0.05))",
+            border: "1px solid var(--gold)",
+            marginBottom: "20px",
+            borderRadius: "6px"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+              <span style={{ color: "var(--gold)", fontWeight: "bold" }}>⚖️ Loaded Document:</span>
+              <strong style={{ color: "var(--text)" }}>{activeDocument.title}</strong>
+              <span style={{ fontSize: "0.85rem", color: "var(--muted)" }}>({activeDocument.documentType})</span>
             </div>
+            <button
+              onClick={() => {
+                setActiveDocument(null);
+                setText("");
+                setResponse("");
+              }}
+              className="record-clear-btn"
+              style={{ padding: "4px 10px", fontSize: "0.75rem", minHeight: "28px" }}
+            >
+              Unload
+            </button>
+          </div>
+        )}
 
-            <div className="tab-bar">
-              <button
-                type="button"
-                className={`tab-btn ${inputMode === "paste" ? "active" : ""}`}
-                onClick={() => setInputMode("paste")}
-              >
-                Testimony
-              </button>
-              <button
-                type="button"
-                className={`tab-btn ${inputMode === "upload" ? "active" : ""}`}
-                onClick={() => setInputMode("upload")}
-              >
-                Evidence
-              </button>
-            </div>
+        <nav className="tab-bar" style={{ marginBottom: "24px", flexWrap: "wrap" }}>
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </nav>
 
-            {inputMode === "paste" ? (
-              <div className="field-group">
-                <textarea
-                  className="editor-textarea"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder="Paste the contract, policy, or clause bundle here..."
-                />
-                {text && (
-                  <div className="editor-stats">
-                    <span>{wordCount} words</span>
-                    <span>~{estimatedReadingTime} min read</span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="field-group">
-                <label
-                  htmlFor="file-upload"
-                  className={`dropzone ${isDragOver ? "dragover" : ""} ${file ? "has-file" : ""}`}
-                  onDragOver={onDragOver}
-                  onDragLeave={onDragLeave}
-                  onDrop={onDrop}
-                >
-                  <input
-                    id="file-upload"
-                    type="file"
-                    accept=".pdf,.txt"
-                    style={{ display: "none" }}
-                    onChange={handleFileChange}
-                  />
-                  {file ? (
-                    <>
-                      <FileIcon className="dropzone-icon active" />
-                      <div className="file-info-box">
-                        <span className="file-name">{file.name}</span>
-                        <span className="file-size">({(file.size / 1024).toFixed(1)} KB)</span>
-                      </div>
-                      <button
-                        type="button"
-                        className="remove-file-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setFile(null);
-                        }}
-                      >
-                        <CloseIcon className="remove-icon" />
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <UploadIcon className="dropzone-icon" />
-                      <div className="dropzone-text">
-                        <span className="highlight">Present evidence</span> or drag & drop
-                      </div>
-                      <span className="dropzone-sub">PDF or Plain Text (up to 10MB)</span>
-                    </>
-                  )}
-                </label>
-              </div>
-            )}
-
-            <div className="meta-grid">
-              <div className="field-row">
-                <label className="field-label">Evidence Type</label>
-                <span className="select-frame">
-                  <select className="select-input" value={docType} onChange={(e) => setDocType(e.target.value)}>
-                    {DOCTYPES.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </select>
-                </span>
-              </div>
-
-              <div className="field-row">
-                <label className="field-label">Cross-Examination</label>
-                <span className="select-frame">
-                  <select className="select-input" value={task} onChange={(e) => setTask(e.target.value)}>
-                    {TASKS.map((taskOption) => (
-                      <option key={taskOption} value={taskOption}>
-                        {taskOption}
-                      </option>
-                    ))}
-                  </select>
-                </span>
-              </div>
-            </div>
-
-            <div className="btn-group">
-              <button type="submit" className="run-btn" disabled={loading}>
-                {loading ? (
-                  <span className="loading-spinner-btn">Pressing the Record...</span>
-                ) : (
-                  "Start Cross-Examination"
-                )}
-              </button>
-              <button type="button" className="clear-btn" onClick={handleClear} disabled={loading}>
-                Clear
-              </button>
-            </div>
-
-            {error && (
-              <div className="alert error">
-                <InfoIcon className="alert-icon" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            {saveStatus && (
-              <div className="alert success">
-                <CheckIcon className="alert-icon" />
-                <span>{saveStatus}</span>
-              </div>
-            )}
-          </form>
-
-          <section id="testimony" className="panel viewer-panel">
-            <div className="viewer-header">
-              <h2 className="viewer-title">
-                <ScalesIcon className="panel-title-icon" />
-                Testimony Board
-              </h2>
-              {response && !loading && (
-                <div className="viewer-actions">
-                  <button
-                    className={`action-icon-btn ${copied ? "success" : ""}`}
-                    onClick={handleCopy}
-                    title={copied ? "Copied" : "Copy to Clipboard"}
-                  >
-                    {copied ? <CheckIcon className="action-icon" /> : <CopyIcon className="action-icon" />}
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div className="viewer-scroll-container">
-              {loading ? (
-                <div className="skeleton-loader">
-                  <div className="skeleton-line h"></div>
-                  <div className="skeleton-line p1"></div>
-                  <div className="skeleton-line p2"></div>
-                  <div className="skeleton-line p3"></div>
-                  <div className="skeleton-line p1"></div>
-                  <div className="skeleton-line p2"></div>
-                  <div className="skeleton-line p4"></div>
-                  <div className="loading-step-text">
-                    {LOADING_STEPS[loadingStep]}
-                  </div>
-                </div>
-              ) : response ? (
-                <div
-                  className="markdown-content"
-                  dangerouslySetInnerHTML={{ __html: marked.parse(response) }}
-                />
-              ) : (
-                <div className="empty-state">
-                  <ScalesIcon className="empty-state-icon" />
-                  <div className="empty-state-title">The bench is waiting.</div>
-                  <p className="empty-state-desc">
-                    Submit testimony or evidence to produce a structured legal brief.
-                  </p>
-                </div>
-              )}
-            </div>
-          </section>
-        </div>
-
-        <section id="record" className="history-shell">
-          <DocumentHistory onDocumentSelect={(doc) => {
-            setText(doc.text);
-            setDocType(doc.type);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }} />
-        </section>
+        {renderTabContent()}
 
         <footer className="dashboard-footer">
           <p>

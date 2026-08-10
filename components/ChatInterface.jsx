@@ -140,7 +140,7 @@ export default function ChatInterface({ documentText, documentId }) {
             padding: "6px 12px",
             background: "transparent",
             border: "1px solid var(--line)",
-            color: var(--muted)",
+            color: "var(--muted)",
             fontSize: "0.8rem",
             cursor: "pointer",
           }}

@@ -1,13 +1,16 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { getDocuments, getAnalyses, deleteDocument } from '../lib/storage';
+import { getDocuments, getAnalyses, deleteDocument, getFolders, updateDocument } from '../lib/storage';
+import FolderManager from './FolderManager';
 
 export default function DocumentHistory({ onDocumentSelect }) {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [selectedFolderId, setSelectedFolderId] = useState(null);
+  const [folders, setFolders] = useState([]);
 
   const fetchDocuments = useCallback(() => {
     setLoading(true);
@@ -23,15 +26,24 @@ export default function DocumentHistory({ onDocumentSelect }) {
     setLoading(false);
   }, []);
 
+  const fetchFolders = useCallback(() => {
+    setFolders(getFolders());
+  }, []);
+
   useEffect(() => {
     fetchDocuments();
   }, [fetchDocuments]);
+
+  useEffect(() => {
+    fetchFolders();
+  }, [fetchFolders, documents]);
 
   const filteredDocuments = documents.filter(doc => {
     const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.documentType.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === 'all' || doc.documentType === filterType;
-    return matchesSearch && matchesType;
+    const matchesFolder = selectedFolderId === null || doc.folderId === selectedFolderId;
+    return matchesSearch && matchesType && matchesFolder;
   });
 
   const handleQuickReAnalyze = (doc) => {
@@ -73,6 +85,8 @@ export default function DocumentHistory({ onDocumentSelect }) {
           </button>
         )}
       </div>
+
+      <FolderManager selectedFolderId={selectedFolderId} onSelectFolder={setSelectedFolderId} />
 
       <div className="record-controls">
         <input
@@ -131,7 +145,23 @@ export default function DocumentHistory({ onDocumentSelect }) {
                   {doc.analyses?.length ? ` &bull; ${doc.analyses.length} analysis${doc.analyses.length > 1 ? 'es' : ''}` : ''}
                 </p>
               </div>
-              <div className="record-actions">
+              <div className="record-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <span className="select-frame" style={{ minHeight: '34px', display: 'inline-flex' }}>
+                  <select
+                    value={doc.folderId || ''}
+                    onChange={(e) => {
+                      updateDocument(doc.id, { folderId: e.target.value || null });
+                      fetchDocuments();
+                    }}
+                    style={{ padding: '4px 30px 4px 10px', fontSize: '0.8rem', height: '34px' }}
+                    className="select-input"
+                  >
+                    <option value="">No Folder</option>
+                    {folders.map((f) => (
+                      <option key={f.id} value={f.id}>{f.name}</option>
+                    ))}
+                  </select>
+                </span>
                 <button
                   onClick={() => handleQuickReAnalyze(doc)}
                   className="record-primary-btn"
