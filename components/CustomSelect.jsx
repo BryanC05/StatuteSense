@@ -110,8 +110,9 @@ export default function CustomSelect({
         aria-expanded={isOpen}
         disabled={disabled}
       >
-        <span className="custom-select-label">
-          {selectedOption ? selectedOption.label : placeholder}
+        <span className="custom-select-label" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ color: "var(--gold)", fontSize: "0.85rem", opacity: 0.9 }}>⚖️</span>
+          <span>{selectedOption ? selectedOption.label : placeholder}</span>
         </span>
         <span className="custom-select-arrow">
           <svg

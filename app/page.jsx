@@ -33,6 +33,20 @@ const LOADING_STEPS = [
   "Preparing the final court record...",
 ];
 
+const AttorneyBadgeIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="url(#badgeGold)" stroke="#ffffff" strokeWidth="1" />
+    <circle cx="12" cy="12" r="4" fill="#1d70f5" stroke="#ffffff" strokeWidth="1" />
+    <defs>
+      <linearGradient id="badgeGold" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#ffea75" />
+        <stop offset="50%" stopColor="#ffcb3d" />
+        <stop offset="100%" stopColor="#c78c00" />
+      </linearGradient>
+    </defs>
+  </svg>
+);
+
 const ScalesIcon = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <line x1="12" y1="3" x2="12" y2="21" />
@@ -91,16 +105,16 @@ const InfoIcon = ({ className }) => (
 );
 
 const TABS = [
-  { id: "desk", label: "Analysis Desk", icon: "⚖️" },
-  { id: "chat", label: "Document Chat", icon: "💬" },
-  { id: "compare", label: "Comparison", icon: "🔍" },
-  { id: "risk", label: "Risk Assessment", icon: "🛡️" },
-  { id: "compliance", label: "Compliance", icon: "✅" },
-  { id: "clauses", label: "Clause Library", icon: "📖" },
-  { id: "deadlines", label: "Deadlines", icon: "📅" },
-  { id: "prompts", label: "Custom Prompts", icon: "🛠️" },
-  { id: "analytics", label: "Analytics", icon: "📊" },
-  { id: "search", label: "Explorer & Search", icon: "📂" },
+  { id: "desk", label: "Defense Desk", icon: "⚖️" },
+  { id: "chat", label: "Cross-Examination", icon: "💬" },
+  { id: "compare", label: "Evidence Comparison", icon: "🔍" },
+  { id: "risk", label: "Risk Radar", icon: "🛡️" },
+  { id: "compliance", label: "Verdict Verification", icon: "✅" },
+  { id: "clauses", label: "Precedent Library", icon: "📖" },
+  { id: "deadlines", label: "Statute Clock", icon: "📅" },
+  { id: "prompts", label: "Court Directives", icon: "🛠️" },
+  { id: "analytics", label: "Trial Analytics", icon: "📊" },
+  { id: "search", label: "Evidence Vault", icon: "📂" },
 ];
 
 export default function HomePage() {
@@ -596,8 +610,23 @@ export default function HomePage() {
     <>
       <header className="app-header">
         <div className="header-brand">
+          <AttorneyBadgeIcon className="header-logo-icon" style={{ width: "32px", height: "32px", filter: "drop-shadow(0 0 6px rgba(255, 203, 61, 0.6))" }} />
           <ScalesIcon className="header-logo-icon" />
-          <span className="header-logo-text">StatuteSense</span>
+          <span className="header-logo-text" style={{ fontFamily: "var(--font-header)", letterSpacing: "1px" }}>StatuteSense</span>
+          <span className="court-session-chip" style={{
+            padding: "3px 8px",
+            fontSize: "0.7rem",
+            fontFamily: "var(--font-action)",
+            letterSpacing: "1px",
+            background: "linear-gradient(135deg, var(--prosecution-red), var(--prosecution-red-dark))",
+            color: "#ffffff",
+            border: "1px solid var(--gold)",
+            boxShadow: "2px 2px 0 #000000",
+            textTransform: "uppercase",
+            marginLeft: "6px"
+          }}>
+            SESSION ACTIVE
+          </span>
         </div>
         <div className="user-block" style={{ display: "flex", gap: "16px", alignItems: "center" }}>
           <button
@@ -616,25 +645,40 @@ export default function HomePage() {
             {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
           </button>
           <div className="user-info">
-            <span className="user-label">AI Model</span>
+            <span className="user-label">AI Counsel Engine</span>
             <span className="user-name">{model || "Loading..."}</span>
           </div>
         </div>
       </header>
 
       <main className="dashboard-container">
-        <section className="court-hero" aria-labelledby="case-title">
+        <section className="court-hero" aria-labelledby="case-title" style={{
+          position: "relative",
+          overflow: "hidden",
+          border: "3px solid var(--gold)",
+          boxShadow: "6px 6px 0 #000000, 0 0 24px rgba(255, 203, 61, 0.2)",
+          background: "linear-gradient(135deg, rgba(29, 112, 245, 0.25) 0%, rgba(13, 20, 37, 0.95) 60%, rgba(224, 27, 36, 0.25) 100%)"
+        }}>
           <div className="court-hero-copy">
-            <span className="case-stamp">Intelligence Brief</span>
-            <h1 id="case-title">Build the argument before the clock strikes.</h1>
-            <p>
-              Feed StatuteSense a document and get a structured brief with clauses,
-              risks, obligations, and next moves ready for review.
+            <span className="court-evidence-stamp">COURT RECORD DOSSIER</span>
+            <h1 id="case-title" style={{ fontFamily: "var(--font-header)", letterSpacing: "0.5px", textShadow: "3px 3px 0 #000000" }}>
+              BUILD THE DEFENSE BEFORE THE GAVEL FALLS.
+            </h1>
+            <p style={{ fontSize: "1.02rem", color: "var(--text)" }}>
+              Cross-examine legal evidence, analyze critical clauses, expose high-risk traps, and assemble an unassailable court record.
             </p>
           </div>
-          <div className="court-hero-meter" aria-label="Case readiness">
-            <span>Case Readiness</span>
-            <strong>{activeDocument ? "Ready" : "Standby"}</strong>
+          <div className="court-hero-meter" aria-label="Case readiness" style={{
+            border: "2px solid var(--gold)",
+            background: "linear-gradient(180deg, #111a2e, #070b15)",
+            boxShadow: "3px 3px 0 #000000",
+            padding: "12px 18px",
+            textAlign: "center"
+          }}>
+            <span style={{ fontFamily: "var(--font-action)", fontSize: "1.1rem", color: "var(--gold)", letterSpacing: "1px" }}>CASE READINESS</span>
+            <strong style={{ display: "block", fontSize: "1.4rem", color: activeDocument ? "var(--green)" : "var(--gold)", fontFamily: "var(--font-action)", letterSpacing: "1.5px" }}>
+              {activeDocument ? "ARMED FOR COURT" : "STANDBY AT DESK"}
+            </strong>
           </div>
         </section>
 
