@@ -42,7 +42,7 @@ export default function CustomPromptManager({ onSelectPrompt }) {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this prompt?')) return;
+    if (!confirm('Delete this court directive template?')) return;
     try {
       deletePrompt(id);
       fetchPrompts();
@@ -56,39 +56,34 @@ export default function CustomPromptManager({ onSelectPrompt }) {
   });
 
   return (
-    <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#f0e6d2' }}>Custom Prompts</h3>
+    <div style={{ padding: '0.5rem 0' }}>
+      <div className="record-header">
+        <h3 className="record-title" style={{ fontFamily: 'var(--font-header)', letterSpacing: '0.5px' }}>
+          DEFENSE DIRECTIVE TEMPLATES
+        </h3>
         <button
+          className="record-primary-btn"
           onClick={() => setShowForm(!showForm)}
-          style={{
-            padding: '0.5rem 1rem',
-            background: 'linear-gradient(135deg, rgba(255,179,127,0.2), rgba(255,140,84,0.2))',
-            border: '1px solid rgba(255,179,127,0.4)',
-            color: '#ffb37f',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: '0.85rem',
-          }}
         >
-          {showForm ? 'Cancel' : '+ New Prompt'}
+          {showForm ? 'CANCEL' : '+ NEW DIRECTIVE'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+        <form onSubmit={handleSubmit} style={{ marginBottom: '1.5rem', padding: '1.25rem', background: 'linear-gradient(180deg, #0e1526, #070b15)', border: '3px solid var(--gold)', boxShadow: '4px 4px 0 #000000' }}>
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: '#ccc' }}>Name</label>
+            <label className="field-label">Directive Name</label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
-              style={{ width: '100%', padding: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: '#fff' }}
+              className="record-search"
+              placeholder="e.g. Cross-Examine Indemnity Clause"
             />
           </div>
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: '#ccc' }}>Category</label>
+            <label className="field-label">Category</label>
             <CustomSelect
               options={CATEGORIES}
               value={formData.category}
@@ -96,27 +91,29 @@ export default function CustomPromptManager({ onSelectPrompt }) {
             />
           </div>
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: '#ccc' }}>Description</label>
+            <label className="field-label">Description</label>
             <input
               type="text"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              style={{ width: '100%', padding: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: '#fff' }}
+              className="record-search"
+              placeholder="Short strategy summary..."
             />
           </div>
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: '#ccc' }}>Prompt Template</label>
+            <label className="field-label">Prompt Template Directive</label>
             <textarea
               value={formData.prompt}
               onChange={(e) => setFormData({ ...formData, prompt: e.target.value })}
               required
               rows={4}
-              style={{ width: '100%', padding: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: '#fff', fontFamily: 'monospace', fontSize: '0.85rem' }}
-              placeholder="Analyze the following {document_type} and identify..."
+              className="editor-textarea"
+              style={{ minHeight: '100px' }}
+              placeholder="Interrogate the following clause and extract all obligations..."
             />
           </div>
-          <button type="submit" style={{ padding: '0.5rem 1.5rem', background: 'linear-gradient(135deg, #ffb37f, #ff8c54)', border: 'none', borderRadius: '6px', color: '#fff', cursor: 'pointer', fontWeight: '600' }}>
-            Save Prompt
+          <button type="submit" className="run-btn" style={{ minHeight: '44px', fontSize: '1.1rem' }}>
+            SAVE DIRECTIVE
           </button>
         </form>
       )}
@@ -124,31 +121,17 @@ export default function CustomPromptManager({ onSelectPrompt }) {
       <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
         <button
           onClick={() => setFilterCategory('all')}
-          style={{
-            padding: '0.25rem 0.75rem',
-            background: filterCategory === 'all' ? 'rgba(255,179,127,0.3)' : 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,179,127,0.3)',
-            color: filterCategory === 'all' ? '#ffb37f' : '#aaa',
-            borderRadius: '20px',
-            cursor: 'pointer',
-            fontSize: '0.75rem',
-          }}
+          className={`tab-btn ${filterCategory === 'all' ? 'active' : ''}`}
+          style={{ minHeight: '34px', fontSize: '0.95rem', padding: '4px 12px' }}
         >
-          All
+          ALL
         </button>
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => setFilterCategory(cat)}
-            style={{
-              padding: '0.25rem 0.75rem',
-              background: filterCategory === cat ? 'rgba(255,179,127,0.3)' : 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,179,127,0.3)',
-              color: filterCategory === cat ? '#ffb37f' : '#aaa',
-              borderRadius: '20px',
-              cursor: 'pointer',
-              fontSize: '0.75rem',
-            }}
+            className={`tab-btn ${filterCategory === cat ? 'active' : ''}`}
+            style={{ minHeight: '34px', fontSize: '0.95rem', padding: '4px 12px' }}
           >
             {cat}
           </button>
@@ -156,35 +139,40 @@ export default function CustomPromptManager({ onSelectPrompt }) {
       </div>
 
       {loading ? (
-        <p style={{ color: '#888', textAlign: 'center', padding: '2rem' }}>Loading prompts...</p>
+        <p style={{ color: 'var(--muted)', textAlign: 'center', padding: '2rem' }}>Loading directives archive...</p>
       ) : filteredPrompts.length === 0 ? (
-        <p style={{ color: '#888', textAlign: 'center', padding: '2rem' }}>No prompts yet. Create your first custom prompt!</p>
+        <div className="empty-state" style={{ minHeight: "180px", border: "2px dashed var(--gold)" }}>
+          <div className="empty-state-title" style={{ fontFamily: "var(--font-action)", fontSize: "1.2rem", letterSpacing: "1px" }}>
+            NO CUSTOM DIRECTIVES REGISTERED
+          </div>
+          <p className="empty-state-desc">Create custom directives to streamline courtroom cross-examination prompts.</p>
+        </div>
       ) : (
-        <div style={{ display: 'grid', gap: '0.75rem' }}>
+        <div style={{ display: 'grid', gap: '12px' }}>
           {filteredPrompts.map((p) => (
-            <div key={p.id} style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div key={p.id} style={{ padding: '16px', background: 'linear-gradient(180deg, #0e1526, #070b15)', border: '2px solid var(--gold)', boxShadow: '3px 3px 0 #000000' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
                 <div>
-                  <div style={{ fontWeight: '600', color: '#f0e6d2', marginBottom: '0.25rem' }}>{p.name}</div>
-                  {p.description && <div style={{ fontSize: '0.8rem', color: '#999', marginBottom: '0.5rem' }}>{p.description}</div>}
-                  <div style={{ fontSize: '0.75rem', color: '#ffb37f', background: 'rgba(255,179,127,0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px', display: 'inline-block' }}>
+                  <div style={{ fontFamily: 'var(--font-action)', fontSize: '1.2rem', color: 'var(--paper)', letterSpacing: '0.5px' }}>{p.name}</div>
+                  {p.description && <div style={{ fontSize: '0.85rem', color: 'var(--muted)', margin: '4px 0' }}>{p.description}</div>}
+                  <span className="court-speaker-badge badge-defense" style={{ fontSize: '0.75rem', padding: '2px 8px' }}>
                     {p.category}
-                  </div>
+                  </span>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '8px' }}>
                   <button
                     onClick={() => onSelectPrompt && onSelectPrompt(p.prompt)}
-                    title="Use this prompt"
-                    style={{ padding: '0.25rem 0.5rem', background: 'rgba(255,179,127,0.2)', border: '1px solid rgba(255,179,127,0.3)', borderRadius: '4px', color: '#ffb37f', cursor: 'pointer', fontSize: '0.75rem' }}
+                    className="record-primary-btn"
+                    style={{ fontSize: '0.85rem', padding: '4px 12px' }}
                   >
-                    Use
+                    DEPLOY
                   </button>
                   <button
                     onClick={() => handleDelete(p.id)}
-                    title="Delete"
-                    style={{ padding: '0.25rem 0.5rem', background: 'rgba(255,100,100,0.2)', border: '1px solid rgba(255,100,100,0.3)', borderRadius: '4px', color: '#ff6464', cursor: 'pointer', fontSize: '0.75rem' }}
+                    className="record-delete-btn"
+                    style={{ fontSize: '0.85rem', padding: '4px 12px' }}
                   >
-                    Delete
+                    DELETE
                   </button>
                 </div>
               </div>

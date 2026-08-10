@@ -25,20 +25,21 @@ export default function SearchBar({ onDocumentSelect }) {
   return (
     <div>
       <div className="record-header">
-        <h3 className="record-title">Search</h3>
+        <h3 className="record-title" style={{ fontFamily: "var(--font-header)" }}>EVIDENCE VAULT SEARCH</h3>
       </div>
 
-      <div className="search-bar">
+      <div className="search-bar" style={{ display: "flex", gap: "10px" }}>
         <input
           type="text"
           className="search-input"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Search documents, clauses, tags..."
+          placeholder="Search evidence, contracts, clauses, tags..."
+          style={{ flex: 1, minHeight: "52px" }}
         />
-        <button className="record-primary-btn" onClick={handleSearch}>
-          Search
+        <button className="run-btn" onClick={handleSearch} style={{ minHeight: "52px", padding: "10px 24px" }}>
+          SEARCH VAULT
         </button>
       </div>
 

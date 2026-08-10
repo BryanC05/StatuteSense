@@ -35,7 +35,7 @@ export default function AnalyticsDashboard() {
         documentsByType: Object.entries(byType).map(([type, count]) => ({ type, count })),
         recentActivity: analyses.slice(0, 5).map(a => ({
           ...a,
-          documentTitle: docMap[a.documentId]?.title || 'Unknown',
+          documentTitle: docMap[a.documentId]?.title || 'Unknown Record',
         })),
       });
     } catch (error) {
@@ -46,70 +46,92 @@ export default function AnalyticsDashboard() {
   };
 
   if (loading) {
-    return <div style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>Loading analytics...</div>;
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center', fontFamily: 'var(--font-action)', fontSize: '1.2rem', color: 'var(--gold)', letterSpacing: '1px' }}>
+        LOADING TRIAL ANALYTICS RECORD...
+      </div>
+    );
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2 style={{ color: '#f0e6d2', marginBottom: '1.5rem' }}>Analytics Dashboard</h2>
+    <div style={{ padding: '1rem 0' }}>
+      <div className="record-header">
+        <h2 className="record-title" style={{ fontFamily: 'var(--font-header)', letterSpacing: '0.5px' }}>
+          TRIAL & EVIDENCE ANALYTICS
+        </h2>
+      </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <div style={{
-          padding: '1.5rem',
-          background: 'linear-gradient(135deg, rgba(255,179,127,0.1), rgba(255,140,84,0.1))',
-          border: '1px solid rgba(255,179,127,0.3)',
-          borderRadius: '12px',
+          padding: '20px',
+          background: 'linear-gradient(135deg, #18253d 0%, #0d1526 100%)',
+          border: '3px solid var(--gold)',
+          boxShadow: '4px 4px 0 #000000',
           textAlign: 'center',
         }}>
-          <div style={{ fontSize: '2.5rem', fontWeight: '700', color: '#ffb37f' }}>{stats.totalDocuments}</div>
-          <div style={{ color: '#aaa', fontSize: '0.9rem' }}>Total Documents</div>
+          <div style={{ fontFamily: 'var(--font-action)', fontSize: '3rem', color: 'var(--gold)', textShadow: '2px 2px 0 #000', lineHeight: 1 }}>
+            {stats.totalDocuments}
+          </div>
+          <div style={{ fontFamily: 'var(--font-action)', fontSize: '1rem', color: 'var(--text)', letterSpacing: '1px', textTransform: 'uppercase', marginTop: '6px' }}>
+            TOTAL COURT EVIDENCE
+          </div>
         </div>
+
         <div style={{
-          padding: '1.5rem',
-          background: 'linear-gradient(135deg, rgba(127,200,255,0.1), rgba(84,156,255,0.1))',
-          border: '1px solid rgba(127,200,255,0.3)',
-          borderRadius: '12px',
+          padding: '20px',
+          background: 'linear-gradient(135deg, #0f2744 0%, #09172a 100%)',
+          border: '3px solid var(--defense-blue)',
+          boxShadow: '4px 4px 0 #000000',
           textAlign: 'center',
         }}>
-          <div style={{ fontSize: '2.5rem', fontWeight: '700', color: '#7fc8ff' }}>{stats.totalAnalyses}</div>
-          <div style={{ color: '#aaa', fontSize: '0.9rem' }}>Total Analyses</div>
+          <div style={{ fontFamily: 'var(--font-action)', fontSize: '3rem', color: 'var(--cyan)', textShadow: '2px 2px 0 #000', lineHeight: 1 }}>
+            {stats.totalAnalyses}
+          </div>
+          <div style={{ fontFamily: 'var(--font-action)', fontSize: '1rem', color: 'var(--text)', letterSpacing: '1px', textTransform: 'uppercase', marginTop: '6px' }}>
+            CROSS-EXAMINATIONS
+          </div>
         </div>
+
         <div style={{
-          padding: '1.5rem',
-          background: 'linear-gradient(135deg, rgba(127,255,180,0.1), rgba(84,255,158,0.1))',
-          border: '1px solid rgba(127,255,180,0.3)',
-          borderRadius: '12px',
+          padding: '20px',
+          background: 'linear-gradient(135deg, #2b0c12 0%, #150508 100%)',
+          border: '3px solid var(--prosecution-red)',
+          boxShadow: '4px 4px 0 #000000',
           textAlign: 'center',
         }}>
-          <div style={{ fontSize: '0.9rem', color: '#aaa' }}>Avg per Doc</div>
-          <div style={{ fontSize: '2.5rem', fontWeight: '700', color: '#7fffb4' }}>
+          <div style={{ fontFamily: 'var(--font-action)', fontSize: '3rem', color: '#ff667a', textShadow: '2px 2px 0 #000', lineHeight: 1 }}>
             {stats.totalDocuments > 0 ? (stats.totalAnalyses / stats.totalDocuments).toFixed(1) : '0'}
+          </div>
+          <div style={{ fontFamily: 'var(--font-action)', fontSize: '1rem', color: 'var(--text)', letterSpacing: '1px', textTransform: 'uppercase', marginTop: '6px' }}>
+            AVG DIRECTIVES PER CASE
           </div>
         </div>
       </div>
 
       <div style={{
-        padding: '1.5rem',
-        background: 'rgba(255,255,255,0.02)',
-        borderRadius: '12px',
-        border: '1px solid rgba(255,255,255,0.08)',
-        marginBottom: '2rem',
+        padding: '20px',
+        background: 'linear-gradient(180deg, #0e1526 0%, #070b15 100%)',
+        border: '3px solid var(--gold)',
+        boxShadow: '4px 4px 0 #000000',
+        marginBottom: '24px',
       }}>
-        <h3 style={{ color: '#f0e6d2', marginBottom: '1rem' }}>Documents by Type</h3>
+        <h3 style={{ fontFamily: 'var(--font-header)', color: 'var(--paper)', fontSize: '1.2rem', textTransform: 'uppercase', marginBottom: '16px', paddingBottom: '8px', borderBottom: '2px solid var(--gold)' }}>
+          EVIDENCE CLASSIFICATION BREAKDOWN
+        </h3>
         {stats.documentsByType.length === 0 ? (
-          <p style={{ color: '#888' }}>No documents yet</p>
+          <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>No case evidence files registered.</p>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '14px' }}>
             {stats.documentsByType.map(({ type, count }) => {
               const percentage = Math.round((count / stats.totalDocuments) * 100);
               return (
-                <div key={type} style={{ textAlign: 'center', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#ffb37f' }}>{count}</div>
-                  <div style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '0.5rem' }}>{type}</div>
-                  <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
-                    <div style={{ width: `${percentage}%`, height: '100%', background: 'linear-gradient(90deg, #ffb37f, #ff8c54)' }} />
+                <div key={type} style={{ textAlign: 'center', padding: '14px', background: '#090e1a', border: '2px solid rgba(255, 203, 61, 0.25)', boxShadow: '2px 2px 0 #000' }}>
+                  <div style={{ fontFamily: 'var(--font-action)', fontSize: '1.8rem', color: 'var(--gold)', textShadow: '1px 1px 0 #000' }}>{count}</div>
+                  <div style={{ fontFamily: 'var(--font-action)', fontSize: '0.95rem', color: 'var(--paper)', letterSpacing: '1px', textTransform: 'uppercase', margin: '4px 0 8px' }}>{type}</div>
+                  <div style={{ height: '8px', background: '#000000', border: '1px solid var(--gold)', overflow: 'hidden' }}>
+                    <div style={{ width: `${percentage}%`, height: '100%', background: 'linear-gradient(90deg, var(--gold), var(--prosecution-red))' }} />
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#888', marginTop: '0.25rem' }}>{percentage}%</div>
+                  <div style={{ fontFamily: 'var(--font-action)', fontSize: '0.85rem', color: 'var(--muted)', marginTop: '4px' }}>{percentage}% SHARE</div>
                 </div>
               );
             })}
@@ -118,34 +140,37 @@ export default function AnalyticsDashboard() {
       </div>
 
       <div style={{
-        padding: '1.5rem',
-        background: 'rgba(255,255,255,0.02)',
-        borderRadius: '12px',
-        border: '1px solid rgba(255,255,255,0.08)',
+        padding: '20px',
+        background: 'linear-gradient(180deg, #0e1526 0%, #070b15 100%)',
+        border: '3px solid var(--gold)',
+        boxShadow: '4px 4px 0 #000000',
       }}>
-        <h3 style={{ color: '#f0e6d2', marginBottom: '1rem' }}>Recent Analyses</h3>
+        <h3 style={{ fontFamily: 'var(--font-header)', color: 'var(--paper)', fontSize: '1.2rem', textTransform: 'uppercase', marginBottom: '16px', paddingBottom: '8px', borderBottom: '2px solid var(--gold)' }}>
+          RECENT CROSS-EXAMINATIONS
+        </h3>
         {stats.recentActivity.length === 0 ? (
-          <p style={{ color: '#888' }}>No recent activity</p>
+          <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>No recent interrogations logged.</p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {stats.recentActivity.map((activity, idx) => (
               <div key={activity.id || idx} style={{
-                padding: '1rem',
-                background: 'rgba(255,255,255,0.03)',
-                borderRadius: '6px',
-                border: '1px solid rgba(255,255,255,0.05)',
+                padding: '14px 18px',
+                background: '#090e1a',
+                border: '2px solid rgba(255, 203, 61, 0.25)',
+                borderLeft: '5px solid var(--defense-blue)',
+                boxShadow: '3px 3px 0 #000000',
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                   <div>
-                    <div style={{ color: '#f0e6d2', fontWeight: '500' }}>{activity.documentTitle}</div>
-                    <div style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.25rem' }}>
-                      {activity.prompt} &bull; {new Date(activity.createdAt).toLocaleDateString()}
+                    <div style={{ fontFamily: 'var(--font-action)', fontSize: '1.1rem', color: 'var(--paper)', letterSpacing: '0.5px' }}>{activity.documentTitle}</div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: '2px' }}>
+                      Prompt: {activity.prompt} &bull; {new Date(activity.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                   {activity.duration && (
-                    <div style={{ fontSize: '0.75rem', color: '#7fc8ff', background: 'rgba(127,200,255,0.1)', padding: '0.25rem 0.5rem', borderRadius: '4px' }}>
-                      {(activity.duration / 1000).toFixed(1)}s
-                    </div>
+                    <span className="court-speaker-badge badge-defense" style={{ fontSize: "0.85rem" }}>
+                      {(activity.duration / 1000).toFixed(1)}s LATENCY
+                    </span>
                   )}
                 </div>
               </div>

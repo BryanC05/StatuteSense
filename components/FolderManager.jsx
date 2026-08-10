@@ -49,8 +49,8 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
   return (
     <div style={{ marginBottom: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-        <span className="field-label" style={{ color: "var(--gold)", fontWeight: 900, fontSize: "0.76rem", textTransform: "uppercase", letterSpacing: "1px" }}>
-          Folders
+        <span className="field-label" style={{ color: "var(--gold)", fontFamily: "var(--font-action)", fontSize: "1.1rem", letterSpacing: "1px" }}>
+          CASE DOSSIER BINDERS
         </span>
         <button
           onClick={() => {
@@ -59,9 +59,9 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
             setFormData({ name: "", color: COLORS[0] });
           }}
           className="record-clear-btn"
-          style={{ minHeight: "30px", padding: "4px 10px", fontSize: "0.75rem" }}
+          style={{ minHeight: "28px", padding: "2px 10px", fontSize: "0.85rem" }}
         >
-          {showForm ? "Cancel" : "+ New"}
+          {showForm ? "CANCEL" : "+ NEW BINDER"}
         </button>
       </div>
 
