@@ -410,13 +410,13 @@ export default function HomePage() {
                 <div className="btn-group">
                   <button type="submit" className="run-btn" disabled={loading}>
                     {loading ? (
-                      <span className="loading-spinner-btn">Pressing the Record...</span>
+                      <span className="loading-spinner-btn">PRESSING THE RECORD...</span>
                     ) : (
-                      "Start Cross-Examination"
+                      "CROSS-EXAMINE EVIDENCE"
                     )}
                   </button>
                   <button type="button" className="clear-btn" onClick={handleClear} disabled={loading}>
-                    Clear
+                    CLEAR RECORD
                   </button>
                 </div>
 
@@ -435,11 +435,11 @@ export default function HomePage() {
                 )}
               </form>
 
-              <section id="testimony" className="panel viewer-panel">
+              <section id="testimony" className="panel viewer-panel" style={{ border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
                 <div className="viewer-header">
-                  <h2 className="viewer-title">
-                    <ScalesIcon className="panel-title-icon" />
-                    Testimony Board
+                  <h2 className="viewer-title" style={{ fontFamily: "var(--font-header)", letterSpacing: "0.5px" }}>
+                    <ScalesIcon className="panel-title-icon" style={{ color: "var(--gold)" }} />
+                    OFFICIAL COURT BRIEF & RECORD
                   </h2>
                   {response && !loading && (
                     <div className="viewer-actions">
@@ -447,6 +447,7 @@ export default function HomePage() {
                         className={`action-icon-btn ${copied ? "success" : ""}`}
                         onClick={handleCopy}
                         title={copied ? "Copied" : "Copy to Clipboard"}
+                        style={{ border: "2px solid #000", boxShadow: "2px 2px 0 #000" }}
                       >
                         {copied ? <CheckIcon className="action-icon" /> : <CopyIcon className="action-icon" />}
                       </button>
@@ -464,7 +465,7 @@ export default function HomePage() {
                       <div className="skeleton-line p1"></div>
                       <div className="skeleton-line p2"></div>
                       <div className="skeleton-line p4"></div>
-                      <div className="loading-step-text">
+                      <div className="loading-step-text" style={{ fontFamily: "var(--font-action)", fontSize: "1.2rem", color: "var(--gold)", letterSpacing: "1px" }}>
                         {LOADING_STEPS[loadingStep]}
                       </div>
                     </div>
@@ -474,11 +475,13 @@ export default function HomePage() {
                       dangerouslySetInnerHTML={{ __html: marked.parse(response) }}
                     />
                   ) : (
-                    <div className="empty-state">
-                      <ScalesIcon className="empty-state-icon" />
-                      <div className="empty-state-title">The bench is waiting.</div>
-                      <p className="empty-state-desc">
-                        Submit testimony or evidence to produce a structured legal brief.
+                    <div className="empty-state" style={{ border: "2px dashed var(--gold)", minHeight: "380px" }}>
+                      <ScalesIcon className="empty-state-icon" style={{ color: "var(--gold)", width: "64px", height: "64px" }} />
+                      <div className="empty-state-title" style={{ fontFamily: "var(--font-action)", fontSize: "1.5rem", letterSpacing: "1px", color: "var(--paper)" }}>
+                        THE JUDGE'S BENCH IS WAITING.
+                      </div>
+                      <p className="empty-state-desc" style={{ color: "var(--muted)", fontSize: "0.95rem" }}>
+                        Present witness testimony or evidence files to generate an unassailable legal brief.
                       </p>
                     </div>
                   )}
