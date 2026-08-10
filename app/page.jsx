@@ -15,11 +15,11 @@ const TASKS = [
 const DOCTYPES = ["Contract", "NDA", "Lease", "Privacy Policy", "Other"];
 
 const LOADING_STEPS = [
-  "Ingesting legal text data...",
-  "Running legal entity NLP parsing...",
-  "Checking for risk clauses & potential liabilities...",
-  "Generating summaries & obligations map...",
-  "Formatting final legal brief...",
+  "Opening the case file...",
+  "Cross-checking clauses and entities...",
+  "Pressing weak points for risk signals...",
+  "Mapping obligations, deadlines, and duties...",
+  "Preparing the final court record...",
 ];
 
 const ScalesIcon = ({ className }) => (
@@ -221,21 +221,47 @@ export default function HomePage() {
     <>
       <header className="app-header">
         <div className="header-brand">
-          <ScalesIcon className="header-logo-icon" />
-          <span className="header-logo-text">LEGALASSIST</span>
+          <span className="brand-badge">SS</span>
+          <div>
+            <span className="header-logo-text">StatuteSense</span>
+            <span className="header-logo-kicker">Court Record AI</span>
+          </div>
         </div>
+        <nav className="case-menu" aria-label="Primary case menu">
+          <a className="case-menu-link active" href="#case-file">Case File</a>
+          <a className="case-menu-link" href="#testimony">Testimony</a>
+          <a className="case-menu-link" href="#record">Record</a>
+        </nav>
         <div className="user-block">
           <div className="user-info">
-            <span className="user-label">Local Mode</span>
-            <span className="user-name">History saved on this device</span>
+            <span className="user-label">Local Bench</span>
+            <span className="user-name">History saved on device</span>
           </div>
         </div>
       </header>
 
       <main className="dashboard-container">
+        <section className="court-hero" aria-labelledby="case-title">
+          <div className="court-hero-copy">
+            <span className="case-stamp">New Evidence</span>
+            <h1 id="case-title">Build the argument before the clock strikes.</h1>
+            <p>
+              Feed StatuteSense a document and get a structured brief with clauses,
+              risks, obligations, and next moves ready for review.
+            </p>
+          </div>
+          <div className="court-hero-meter" aria-label="Case readiness">
+            <span>Case Readiness</span>
+            <strong>Standby</strong>
+          </div>
+        </section>
+
         <div className="dashboard-grid">
-          <form className="panel editor-panel" onSubmit={handleSubmit}>
-            <h2 className="panel-title">Document Source</h2>
+          <form id="case-file" className="panel editor-panel" onSubmit={handleSubmit}>
+            <div className="panel-heading">
+              <span className="panel-number">01</span>
+              <h2 className="panel-title">Case File</h2>
+            </div>
 
             <div className="tab-bar">
               <button
@@ -243,14 +269,14 @@ export default function HomePage() {
                 className={`tab-btn ${inputMode === "paste" ? "active" : ""}`}
                 onClick={() => setInputMode("paste")}
               >
-                Paste Text
+                Testimony
               </button>
               <button
                 type="button"
                 className={`tab-btn ${inputMode === "upload" ? "active" : ""}`}
                 onClick={() => setInputMode("upload")}
               >
-                Upload File
+                Evidence
               </button>
             </div>
 
@@ -260,7 +286,7 @@ export default function HomePage() {
                   className="editor-textarea"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  placeholder="Paste your legal document, contract, or NDA clauses here..."
+                  placeholder="Paste the contract, policy, or clause bundle here..."
                 />
                 {text && (
                   <div className="editor-stats">
@@ -308,7 +334,7 @@ export default function HomePage() {
                     <>
                       <UploadIcon className="dropzone-icon" />
                       <div className="dropzone-text">
-                        <span className="highlight">Click to upload</span> or drag & drop
+                        <span className="highlight">Present evidence</span> or drag & drop
                       </div>
                       <span className="dropzone-sub">PDF or Plain Text (up to 10MB)</span>
                     </>
@@ -319,7 +345,7 @@ export default function HomePage() {
 
             <div className="meta-grid">
               <div className="field-row">
-                <label className="field-label">Document Classification</label>
+                <label className="field-label">Evidence Type</label>
                 <select className="select-input" value={docType} onChange={(e) => setDocType(e.target.value)}>
                   {DOCTYPES.map((type) => (
                     <option key={type} value={type}>
@@ -330,7 +356,7 @@ export default function HomePage() {
               </div>
 
               <div className="field-row">
-                <label className="field-label">Analysis Objective</label>
+                <label className="field-label">Cross-Examination</label>
                 <select className="select-input" value={task} onChange={(e) => setTask(e.target.value)}>
                   {TASKS.map((taskOption) => (
                     <option key={taskOption} value={taskOption}>
@@ -344,9 +370,9 @@ export default function HomePage() {
             <div className="btn-group">
               <button type="submit" className="run-btn" disabled={loading}>
                 {loading ? (
-                  <span className="loading-spinner-btn">Analyzing Document…</span>
+                  <span className="loading-spinner-btn">Pressing the Record...</span>
                 ) : (
-                  "Execute Legal Analysis"
+                  "Start Cross-Examination"
                 )}
               </button>
               <button type="button" className="clear-btn" onClick={handleClear} disabled={loading}>
@@ -369,11 +395,11 @@ export default function HomePage() {
             )}
           </form>
 
-          <section className="panel viewer-panel">
+          <section id="testimony" className="panel viewer-panel">
             <div className="viewer-header">
               <h2 className="viewer-title">
                 <ScalesIcon className="panel-title-icon" />
-                Analysis Output
+                Testimony Board
               </h2>
               {response && !loading && (
                 <div className="viewer-actions">
@@ -410,9 +436,9 @@ export default function HomePage() {
               ) : (
                 <div className="empty-state">
                   <ScalesIcon className="empty-state-icon" />
-                  <div className="empty-state-title">Awaiting Document Ingestion</div>
+                  <div className="empty-state-title">The bench is waiting.</div>
                   <p className="empty-state-desc">
-                    Paste legal text or upload a PDF/TXT contract to generate a comprehensive, structured compliance report.
+                    Submit testimony or evidence to produce a structured legal brief.
                   </p>
                 </div>
               )}
@@ -420,13 +446,13 @@ export default function HomePage() {
           </section>
         </div>
 
-        <div style={{ padding: "0 2rem 2rem" }}>
+        <section id="record" className="history-shell">
           <DocumentHistory onDocumentSelect={(doc) => {
             setText(doc.text);
             setDocType(doc.type);
             window.scrollTo({ top: 0, behavior: "smooth" });
           }} />
-        </div>
+        </section>
 
         <footer className="dashboard-footer">
           <p>

@@ -58,55 +58,34 @@ export default function DocumentHistory({ onDocumentSelect }) {
   };
 
   return (
-    <div style={{ marginTop: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1a1a1a' }}>
-          Document History
-        </h2>
+    <div className="record-panel">
+      <div className="record-header">
+        <div>
+          <span className="panel-number">03</span>
+          <h2 className="record-title">Court Record</h2>
+        </div>
         {documents.length > 0 && (
           <button
             onClick={handleClearAll}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              border: '1px solid #d0d5de',
-              background: 'white',
-              color: '#d92d20',
-              fontWeight: 500,
-              fontSize: '0.875rem',
-              cursor: 'pointer',
-            }}
+            className="record-clear-btn"
           >
             Clear All
           </button>
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+      <div className="record-controls">
         <input
           type="text"
-          placeholder="Search documents..."
+          placeholder="Search case files..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            flex: 1,
-            minWidth: '200px',
-            padding: '0.5rem 1rem',
-            borderRadius: '8px',
-            border: '1px solid #d0d5de',
-            fontSize: '0.875rem',
-          }}
+          className="record-search"
         />
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          style={{
-            padding: '0.5rem 1rem',
-            borderRadius: '8px',
-            border: '1px solid #d0d5de',
-            fontSize: '0.875rem',
-            background: 'white',
-          }}
+          className="record-select"
         >
           <option value="all">All Types</option>
           <option value="Contract">Contract</option>
@@ -117,35 +96,26 @@ export default function DocumentHistory({ onDocumentSelect }) {
         </select>
       </div>
 
-      <div style={{ display: 'grid', gap: '0.75rem' }}>
+      <div className="record-list">
         {loading ? (
-          <p style={{ color: '#667085', fontStyle: 'italic' }}>Loading documents...</p>
+          <p className="record-muted">Opening the archive...</p>
         ) : filteredDocuments.length === 0 ? (
-          <p style={{ color: '#667085' }}>
+          <p className="record-muted">
             {searchTerm || filterType !== 'all'
-              ? 'No matching documents found'
-              : 'No documents yet. Upload one to get started!'}
+              ? 'No matching case files found.'
+              : 'No case files yet. Present evidence to begin.'}
           </p>
         ) : (
           filteredDocuments.map((doc) => (
             <div
               key={doc.id}
-              style={{
-                padding: '1rem',
-                borderRadius: '8px',
-                border: '1px solid #e4e7ec',
-                background: '#f9fafb',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: '1rem',
-              }}
+              className="record-item"
             >
-              <div style={{ flex: 1 }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, margin: '0 0 0.25rem 0', color: '#101828' }}>
+              <div className="record-item-main">
+                <h3 className="record-item-title">
                   {doc.title}
                 </h3>
-                <p style={{ fontSize: '0.875rem', color: '#667085', margin: 0 }}>
+                <p className="record-meta">
                   {doc.documentType} &bull; {doc.fileType}
                   {doc.fileSize ? ` &bull; ${(doc.fileSize / 1024).toFixed(1)} KB` : ''}
                   {' &bull; '}
@@ -159,35 +129,16 @@ export default function DocumentHistory({ onDocumentSelect }) {
                   {doc.analyses?.length ? ` &bull; ${doc.analyses.length} analysis${doc.analyses.length > 1 ? 'es' : ''}` : ''}
                 </p>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div className="record-actions">
                 <button
                   onClick={() => handleQuickReAnalyze(doc)}
-                  style={{
-                    padding: '0.5rem 0.75rem',
-                    borderRadius: '6px',
-                    border: 'none',
-                    background: 'linear-gradient(90deg, #d68843 0%, #c77d63 100%)',
-                    color: 'white',
-                    fontWeight: 500,
-                    fontSize: '0.875rem',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                  }}
+                  className="record-primary-btn"
                 >
-                  Re-Analyze
+                  Reopen
                 </button>
                 <button
                   onClick={() => handleDelete(doc.id)}
-                  style={{
-                    padding: '0.5rem 0.75rem',
-                    borderRadius: '6px',
-                    border: '1px solid #d0d5de',
-                    background: 'white',
-                    color: '#667085',
-                    fontWeight: 500,
-                    fontSize: '0.875rem',
-                    cursor: 'pointer',
-                  }}
+                  className="record-delete-btn"
                 >
                   Delete
                 </button>
