@@ -11,10 +11,11 @@ ${documentText}
 Task:
 ${task}
 
-CRITICAL LEGAL CITATION INSTRUCTIONS:
-- You MUST identify and list relevant real statutes, statutory provisions (e.g. UCC Articles, Restatement of Contracts, GDPR Articles, statutory codes), and established legal case precedents that apply to or reference the document clauses.
-- Include a dedicated section titled "### 📜 Legal Sources & Case Law References" at the end listing applicable statutes, regulations, and case law citations for reference.
-- Return the answer in a clear structured Markdown format.`;
+CRITICAL LEGAL CITATION & ANTI-HALLUCINATION INSTRUCTIONS:
+1. STRICT ACCURACY: NEVER fabricate case names, reporter volume/page numbers (e.g. F.2d/F.3d citations), Circuit courts, or non-existent statute section numbers.
+2. VERIFIED SOURCES: Ground your analysis in real, verified statutory codes and landmark case law (e.g., DTSA 18 U.S.C. § 1836 et seq., UTSA § 1(4), Restatement (Second) of Contracts § 71 & § 75, E.I. du Pont de Nemours & Co. v. Christopher 431 F.2d 1012 (5th Cir. 1970), Rockwell Graphic Systems, Inc. v. DEV Industries, Inc. 925 F.2d 174 (7th Cir. 1991), Silvaco Data Systems v. Intel Corp. 184 Cal. App. 4th 210 (2010), UCC Article 2, GDPR Art. 6, CCPA § 1798.100).
+3. Include a dedicated section titled "### 📜 Validated Legal Sources & Case Law References" at the end listing verified statutes, regulations, and case citations for reference.
+4. Return the answer in structured Markdown.`;
 }
 
 export async function POST(request) {
