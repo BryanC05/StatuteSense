@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { getChatHistory, saveChatMessage, deleteChatHistory } from "../lib/storage";
 
-export default function ChatInterface({ documentText, documentId }) {
+export default function ChatInterface({ documentText, documentId, documentTitle }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,18 +18,19 @@ export default function ChatInterface({ documentText, documentId }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim() || loading) return;
+  const handleSend = async (overrideText) => {
+    const textToSend = typeof overrideText === "string" ? overrideText : input;
+    if (!textToSend.trim() || loading) return;
 
     const userMessage = {
       role: "user",
-      content: input.trim(),
+      content: textToSend.trim(),
       documentId,
     };
 
     saveChatMessage(userMessage);
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
+    if (typeof overrideText !== "string") setInput("");
     setLoading(true);
 
     try {
@@ -90,7 +91,47 @@ export default function ChatInterface({ documentText, documentId }) {
 
   return (
     <div className="chat-container" style={{ position: "relative" }}>
-      <div className="chat-messages" style={{ minHeight: "360px", maxHeight: "550px", overflowY: "auto", paddingRight: "8px" }}>
+      {documentTitle && (
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "10px 16px",
+          background: "linear-gradient(135deg, rgba(29, 112, 245, 0.2), #070b15)",
+          border: "2px solid var(--defense-blue)",
+          boxShadow: "3px 3px 0 #000000",
+          marginBottom: "14px"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ color: "var(--gold)", fontWeight: "bold", fontSize: "0.95rem" }}>📜 ACTIVE INTERROGATION RECORD:</span>
+            <strong style={{ color: "var(--paper)", fontFamily: "var(--font-action)", fontSize: "1.1rem", letterSpacing: "0.5px" }}>{documentTitle}</strong>
+          </div>
+          <span className="court-speaker-badge badge-defense" style={{ fontSize: "0.75rem" }}>CONTEXT LOADED</span>
+        </div>
+      )}
+
+      <div style={{ marginBottom: "12px", display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
+        <span style={{ fontSize: "0.8rem", color: "var(--gold)", fontFamily: "var(--font-action)", letterSpacing: "0.5px" }}>QUICK INTERROGATIONS:</span>
+        {[
+          "What are the main liability risks in this case?",
+          "What real statutes or case law precedents apply?",
+          "How can defense counter or renegotiate clause terms?",
+          "Does this scope require a Data Processing Addendum (DPA)?"
+        ].map((promptText, idx) => (
+          <button
+            key={idx}
+            type="button"
+            className="tab-btn-clean"
+            onClick={() => handleSend(promptText)}
+            disabled={loading}
+            style={{ fontSize: "0.82rem", padding: "4px 10px", minHeight: "30px", textTransform: "none" }}
+          >
+            💬 {promptText}
+          </button>
+        ))}
+      </div>
+
+      <div className="chat-messages" style={{ minHeight: "360px", maxHeight: "520px", overflowY: "auto", paddingRight: "8px" }}>
         {messages.length === 0 && (
           <div className="empty-state" style={{ border: "2px dashed var(--gold)" }}>
             <div className="empty-state-icon" style={{ fontSize: "2.5rem" }}>⚖️</div>

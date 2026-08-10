@@ -5,7 +5,7 @@ import { getDocuments, getAnalyses, deleteDocument, getFolders, updateDocument }
 import FolderManager from "./FolderManager";
 import CustomSelect from "./CustomSelect";
 
-export default function DocumentHistory({ onDocumentSelect }) {
+export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -167,7 +167,10 @@ export default function DocumentHistory({ onDocumentSelect }) {
                     ]}
                     style={{ minWidth: "120px" }}
                   />
-                  <button onClick={() => handleQuickReAnalyze(doc)} className="record-primary-btn">
+                  <button onClick={() => onInterrogate ? onInterrogate(doc) : handleQuickReAnalyze(doc)} className="record-primary-btn">
+                    💬 Interrogate
+                  </button>
+                  <button onClick={() => handleQuickReAnalyze(doc)} className="tab-btn-clean" style={{ minHeight: "36px", padding: "4px 12px", fontSize: "0.85rem" }}>
                     Reopen
                   </button>
                   <button onClick={() => handleDelete(doc.id)} className="record-delete-btn">

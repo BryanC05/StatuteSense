@@ -216,6 +216,14 @@ export default function HomePage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleAskFollowUp = (doc) => {
+    const targetDoc = doc || activeDocument || { title: activeDocument?.title || "Current Case Brief", originalText: text };
+    setActiveDocument(targetDoc);
+    if (targetDoc.originalText) setText(targetDoc.originalText);
+    setActiveTab("chat");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
@@ -442,7 +450,14 @@ export default function HomePage() {
                     OFFICIAL COURT BRIEF & RECORD
                   </h2>
                   {response && !loading && (
-                    <div className="viewer-actions">
+                    <div className="viewer-actions" style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                      <button
+                        onClick={() => handleAskFollowUp(activeDocument || { title: activeDocument?.title || "Current Case Brief", originalText: text })}
+                        className="record-primary-btn"
+                        style={{ minHeight: "36px", padding: "4px 14px", fontSize: "0.88rem" }}
+                      >
+                        💬 FOLLOW-UP INTERROGATION
+                      </button>
                       <button
                         className={`action-icon-btn ${copied ? "success" : ""}`}
                         onClick={handleCopy}
@@ -492,6 +507,34 @@ export default function HomePage() {
                         className="markdown-content"
                         dangerouslySetInnerHTML={{ __html: marked.parse(response) }}
                       />
+                      <div style={{
+                        marginTop: "24px",
+                        padding: "16px 20px",
+                        background: "linear-gradient(135deg, rgba(29, 112, 245, 0.2), #070b15)",
+                        border: "2px solid var(--defense-blue)",
+                        boxShadow: "4px 4px 0 #000000",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: "12px"
+                      }}>
+                        <div>
+                          <div style={{ fontFamily: "var(--font-action)", fontSize: "1.25rem", color: "var(--gold)", letterSpacing: "0.8px" }}>
+                            💬 HAVE FOLLOW-UP QUESTIONS ABOUT THIS CASE?
+                          </div>
+                          <div style={{ fontSize: "0.88rem", color: "var(--muted)", marginTop: "2px" }}>
+                            Interrogate AI co-counsel further on specific clauses, liabilities, or defense strategies.
+                          </div>
+                        </div>
+                        <button
+                          className="run-btn"
+                          onClick={() => handleAskFollowUp(activeDocument || { title: activeDocument?.title || "Current Case Brief", originalText: text })}
+                          style={{ minHeight: "42px", padding: "8px 20px", fontSize: "1.05rem" }}
+                        >
+                          ASK FOLLOW-UP QUESTION
+                        </button>
+                      </div>
                     </>
                   ) : (
                     <div className="empty-state" style={{ border: "2px dashed var(--gold)", minHeight: "380px" }}>
@@ -509,7 +552,7 @@ export default function HomePage() {
             </div>
 
             <section id="record" className="history-shell" style={{ marginTop: "30px" }}>
-              <DocumentHistory onDocumentSelect={handleDocumentSelect} />
+              <DocumentHistory onDocumentSelect={handleDocumentSelect} onInterrogate={handleAskFollowUp} />
             </section>
           </>
         );
@@ -523,6 +566,7 @@ export default function HomePage() {
             <ChatInterface
               documentText={text}
               documentId={activeDocument ? activeDocument.id : "global"}
+              documentTitle={activeDocument ? activeDocument.title : "Current Case"}
             />
           </div>
         );

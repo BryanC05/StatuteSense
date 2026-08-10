@@ -11,11 +11,14 @@ ${documentText}
 Task:
 ${task}
 
-CRITICAL LEGAL CITATION & ANTI-HALLUCINATION INSTRUCTIONS:
+CRITICAL LEGAL CITATION & CONTEXTUAL APPLICABILITY RULES:
 1. STRICT ACCURACY: NEVER fabricate case names, reporter volume/page numbers (e.g. F.2d/F.3d citations), Circuit courts, or non-existent statute section numbers.
-2. VERIFIED SOURCES: Ground your analysis in real, verified statutory codes and landmark case law (e.g., DTSA 18 U.S.C. § 1836 et seq., UTSA § 1(4), Restatement (Second) of Contracts § 71 & § 75, E.I. du Pont de Nemours & Co. v. Christopher 431 F.2d 1012 (5th Cir. 1970), Rockwell Graphic Systems, Inc. v. DEV Industries, Inc. 925 F.2d 174 (7th Cir. 1991), Silvaco Data Systems v. Intel Corp. 184 Cal. App. 4th 210 (2010), UCC Article 2, GDPR Art. 6, CCPA § 1798.100).
-3. Include a dedicated section titled "### 📜 Validated Legal Sources & Case Law References" at the end listing verified statutes, regulations, and case citations for reference.
-4. Return the answer in structured Markdown.`;
+2. VERIFIED CORE SOURCES: Ground your analysis in real, verified statutory codes and landmark case law (e.g., DTSA 18 U.S.C. § 1836 et seq., UTSA § 1(4), Restatement (Second) of Contracts § 71 & § 75 for mutual consideration, E.I. du Pont de Nemours & Co. v. Christopher 431 F.2d 1012 (5th Cir. 1970), Rockwell Graphic Systems, Inc. v. DEV Industries, Inc. 925 F.2d 174 (7th Cir. 1991), Silvaco Data Systems v. Intel Corp. 184 Cal. App. 4th 210 (2010)).
+3. CONTEXTUAL SCOPE CHECKS:
+   - UCC Article 2: ONLY cite UCC Article 2 if the text explicitly involves physical goods, manufacturing, or tangible product deliverables. Pure IP, NDAs, software, or services fall under common law.
+   - GDPR Art. 6 / CCPA § 1798.100: ONLY flag privacy statutes or Data Processing Addendum (DPA) requirements if "Personal Data", "PII", "Consumer Information", or "User Records" are present in the text.
+4. Include a dedicated section titled "### 📜 Validated Legal Sources & Case Law References" listing applicable statutes and case law.
+5. At the very end of your response, provide a valid JSON code block enclosed in \`\`\`json ... \`\`\` containing the structured JSON Legal Schema with keys: "document_type", "meta", "clauses", and "legal_citations" (with "statutes", "conditional_statutes", and "case_law").`;
 }
 
 export async function POST(request) {
