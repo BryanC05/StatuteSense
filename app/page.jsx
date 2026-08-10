@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
 import { marked } from "marked";
 import DocumentHistory from "../components/DocumentHistory";
+import { saveDocument, saveAnalysis } from "../lib/storage";
 
 const TASKS = [
   "Summarize the document and highlight key clauses.",
@@ -22,7 +22,6 @@ const LOADING_STEPS = [
   "Formatting final legal brief...",
 ];
 
-// Inline Lucide-style SVG Components
 const ScalesIcon = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <line x1="12" y1="3" x2="12" y2="21" />
@@ -41,14 +40,6 @@ const FileIcon = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
     <polyline points="14 2 14 8 20 8" />
-  </svg>
-);
-
-const LogoutIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-    <polyline points="16 17 21 12 16 7" />
-    <line x1="21" y1="12" x2="9" y2="12" />
   </svg>
 );
 
@@ -88,16 +79,14 @@ const InfoIcon = ({ className }) => (
   </svg>
 );
 
-const handleDocumentSelect = (doc) => {
-  // Load document into the editor
-  setText(doc.text);
-  setDocType(doc.type);
-  // Scroll to top to show editor
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
+const TrashIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+  </svg>
+);
 
 export default function HomePage() {
-  const { data: session, status } = useSession();
   const [text, setText] = useState("");
   const [file, setFile] = useState(null);
   const [task, setTask] = useState(TASKS[0]);
@@ -105,12 +94,12 @@ export default function HomePage() {
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [inputMode, setInputMode] = useState("paste"); // "paste" or "upload"
+  const [inputMode, setInputMode] = useState("paste");
   const [copied, setCopied] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
+  const [saveStatus, setSaveStatus] = useState("");
 
-  // loading step step carousel
   useEffect(() => {
     let interval;
     if (loading) {
@@ -135,6 +124,7 @@ export default function HomePage() {
     setFile(null);
     setResponse("");
     setError("");
+    setSaveStatus("");
   };
 
   const onDragOver = (e) => {
@@ -171,6 +161,7 @@ export default function HomePage() {
     event.preventDefault();
     setError("");
     setResponse("");
+    setSaveStatus("");
 
     if (inputMode === "paste" && !text.trim()) {
       setError("Please paste some document text before running analysis.");
@@ -203,43 +194,26 @@ export default function HomePage() {
         setError(data.message || data.error || "Unable to analyze document.");
       } else {
         setResponse(data.output || "No response returned.");
+
+        if (data.document && data.metadata) {
+          const savedDoc = saveDocument(data.document);
+          saveAnalysis({
+            documentId: savedDoc.id,
+            prompt: task,
+            result: data.output,
+            modelUsed: data.metadata.modelUsed,
+            duration: data.metadata.duration,
+          });
+          setSaveStatus("Analysis saved to local history");
+        }
       }
     } catch (err) {
-      setError("Unable to connect to the AI server. Make sure you are signed in and the API route is available.");
+      setError("Unable to connect to the AI server. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  if (status === "loading") {
-    return (
-      <main className="loading-screen">
-        <div className="loading-logo-box">
-          <ScalesIcon className="spinner-scales" />
-          <div className="loading-text">Authenticating Portal…</div>
-        </div>
-      </main>
-    );
-  }
-
-  if (!session) {
-    return (
-      <main className="signin-container">
-        <section className="signin-card panel">
-          <ScalesIcon className="signin-icon" />
-          <h1 className="signin-logo">LEGALASSIST</h1>
-          <p className="signin-subtitle">
-            Secure, state-of-the-art AI-powered document review, clause extraction, and contract risk analysis.
-          </p>
-          <button className="run-btn signin-btn" onClick={() => signIn()}>
-            Enter Secure Portal
-          </button>
-        </section>
-      </main>
-    );
-  }
-
-  // Dashboard Header stats info
   const wordCount = inputMode === "paste" ? text.trim().split(/\s+/).filter(Boolean).length : 0;
   const estimatedReadingTime = Math.max(1, Math.ceil(wordCount / 200));
 
@@ -252,21 +226,17 @@ export default function HomePage() {
         </div>
         <div className="user-block">
           <div className="user-info">
-            <span className="user-label">Portal Operator</span>
-            <span className="user-name">{session.user?.name || session.user?.email}</span>
+            <span className="user-label">Local Mode</span>
+            <span className="user-name">History saved on this device</span>
           </div>
-          <button className="signout-btn" onClick={() => signOut()} title="Sign Out">
-            <LogoutIcon className="signout-icon" />
-          </button>
         </div>
       </header>
 
       <main className="dashboard-container">
         <div className="dashboard-grid">
-          {/* Editor & Control Column */}
           <form className="panel editor-panel" onSubmit={handleSubmit}>
             <h2 className="panel-title">Document Source</h2>
-            
+
             <div className="tab-bar">
               <button
                 type="button"
@@ -390,9 +360,15 @@ export default function HomePage() {
                 <span>{error}</span>
               </div>
             )}
+
+            {saveStatus && (
+              <div className="alert success">
+                <CheckIcon className="alert-icon" />
+                <span>{saveStatus}</span>
+              </div>
+            )}
           </form>
 
-          {/* AI Output Viewer Column */}
           <section className="panel viewer-panel">
             <div className="viewer-header">
               <h2 className="viewer-title">
@@ -444,7 +420,6 @@ export default function HomePage() {
           </section>
         </div>
 
-        {/* Document History Panel */}
         <div style={{ padding: "0 2rem 2rem" }}>
           <DocumentHistory onDocumentSelect={(doc) => {
             setText(doc.text);
@@ -453,7 +428,7 @@ export default function HomePage() {
           }} />
         </div>
 
-        <footerclassName="dashboard-footer">
+        <footer className="dashboard-footer">
           <p>
             Disclaimer: AI-generated analysis is not 100% accurate. Results are for shallow reference purposes only and do not constitute formal legal advice. Please consult with a qualified legal professional to verify critical details.
           </p>

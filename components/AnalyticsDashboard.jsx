@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getDocuments, getAnalyses } from '../lib/storage';
 
 export default function AnalyticsDashboard() {
   const [stats, setStats] = useState({
@@ -15,32 +16,26 @@ export default function AnalyticsDashboard() {
     fetchStats();
   }, []);
 
-  const fetchStats = async () => {
+  const fetchStats = () => {
     try {
-      const [docsRes, analysesRes] = await Promise.all([
-        fetch('/api/documents?userId=demo-user'),
-        fetch('/api/analyses?userId=demo-user'),
-      ]);
-      
-      const docsData = await docsRes.json();
-      const analysesData = await analysesRes.json();
-      
-      const documents = docsData.documents || [];
-      const analyses = analysesData.analyses || [];
-      
-      // Group by type
+      const documents = getDocuments();
+      const analyses = getAnalyses();
+
       const byType = {};
       documents.forEach(doc => {
         byType[doc.documentType] = (byType[doc.documentType] || 0) + 1;
       });
-      
+
+      const docMap = {};
+      documents.forEach((d) => { docMap[d.id] = d; });
+
       setStats({
         totalDocuments: documents.length,
         totalAnalyses: analyses.length,
         documentsByType: Object.entries(byType).map(([type, count]) => ({ type, count })),
         recentActivity: analyses.slice(0, 5).map(a => ({
           ...a,
-          documentTitle: a.document?.title || 'Unknown',
+          documentTitle: docMap[a.documentId]?.title || 'Unknown',
         })),
       });
     } catch (error) {
@@ -56,9 +51,8 @@ export default function AnalyticsDashboard() {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h2 style={{ color: '#f0e6d2', marginBottom: '1.5rem' }}>📊 Analytics Dashboard</h2>
-      
-      {/* Summary Cards */}
+      <h2 style={{ color: '#f0e6d2', marginBottom: '1.5rem' }}>Analytics Dashboard</h2>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
         <div style={{
           padding: '1.5rem',
@@ -94,7 +88,6 @@ export default function AnalyticsDashboard() {
         </div>
       </div>
 
-      {/* Documents by Type */}
       <div style={{
         padding: '1.5rem',
         background: 'rgba(255,255,255,0.02)',
@@ -124,7 +117,6 @@ export default function AnalyticsDashboard() {
         )}
       </div>
 
-      {/* Recent Activity */}
       <div style={{
         padding: '1.5rem',
         background: 'rgba(255,255,255,0.02)',
@@ -147,7 +139,7 @@ export default function AnalyticsDashboard() {
                   <div>
                     <div style={{ color: '#f0e6d2', fontWeight: '500' }}>{activity.documentTitle}</div>
                     <div style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.25rem' }}>
-                      {activity.prompt} • {new Date(activity.createdAt).toLocaleDateString()}
+                      {activity.prompt} &bull; {new Date(activity.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                   {activity.duration && (

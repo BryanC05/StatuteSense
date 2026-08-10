@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getPrompts, savePrompt, deletePrompt } from '../lib/storage';
 
 const CATEGORIES = ['Summarize', 'Risk Analysis', 'Compliance', 'Extraction', 'Comparison', 'Custom'];
 
@@ -20,31 +21,20 @@ export default function CustomPromptManager({ onSelectPrompt }) {
     fetchPrompts();
   }, []);
 
-  const fetchPrompts = async () => {
-    try {
-      const res = await fetch(`/api/prompts?userId=demo-user&category=${filterCategory}`);
-      const data = await res.json();
-      setPrompts(data.prompts || []);
-    } catch (error) {
-      console.error('Failed to fetch prompts:', error);
-    } finally {
-      setLoading(false);
-    }
+  const fetchPrompts = () => {
+    setLoading(true);
+    const allPrompts = getPrompts();
+    setPrompts(allPrompts);
+    setLoading(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/prompts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, userId: 'demo-user' }),
-      });
-      if (res.ok) {
-        setFormData({ name: '', description: '', prompt: '', category: 'Custom' });
-        setShowForm(false);
-        fetchPrompts();
-      }
+      savePrompt(formData);
+      setFormData({ name: '', description: '', prompt: '', category: 'Custom' });
+      setShowForm(false);
+      fetchPrompts();
     } catch (error) {
       console.error('Failed to create prompt:', error);
     }
@@ -53,17 +43,21 @@ export default function CustomPromptManager({ onSelectPrompt }) {
   const handleDelete = async (id) => {
     if (!confirm('Delete this prompt?')) return;
     try {
-      await fetch(`/api/prompts/${id}`, { method: 'DELETE' });
+      deletePrompt(id);
       fetchPrompts();
     } catch (error) {
       console.error('Failed to delete prompt:', error);
     }
   };
 
+  const filteredPrompts = prompts.filter((p) => {
+    return filterCategory === 'all' || p.category === filterCategory;
+  });
+
   return (
     <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#f0e6d2' }}>📝 Custom Prompts</h3>
+        <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#f0e6d2' }}>Custom Prompts</h3>
         <button
           onClick={() => setShowForm(!showForm)}
           style={{
@@ -99,7 +93,6 @@ export default function CustomPromptManager({ onSelectPrompt }) {
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               style={{ width: '100%', padding: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: '#fff' }}
             >
-              
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
@@ -167,11 +160,11 @@ export default function CustomPromptManager({ onSelectPrompt }) {
 
       {loading ? (
         <p style={{ color: '#888', textAlign: 'center', padding: '2rem' }}>Loading prompts...</p>
-      ) : prompts.length === 0 ? (
+      ) : filteredPrompts.length === 0 ? (
         <p style={{ color: '#888', textAlign: 'center', padding: '2rem' }}>No prompts yet. Create your first custom prompt!</p>
       ) : (
         <div style={{ display: 'grid', gap: '0.75rem' }}>
-          {prompts.map((p) => (
+          {filteredPrompts.map((p) => (
             <div key={p.id} style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>

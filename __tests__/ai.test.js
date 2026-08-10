@@ -5,8 +5,8 @@ describe('AI Module', () => {
     await expect(generateAnalysis('')).rejects.toThrow();
   });
 
-  test('generateAnalysis should handle very long input', async () => {
-    const longText = 'A'.repeat(10000);
-    await expect(generateAnalysis(longText)).resolves.toBeDefined();
-  }, 30000);
+  test('generateAnalysis should throw when no API key configured', async () => {
+    const text = 'This is a test legal document.';
+    await expect(generateAnalysis(text)).rejects.toThrow(/HUGGINGFACE_API_KEY|OPENAI_API_KEY/);
+  });
 });

@@ -2,7 +2,7 @@ import "../styles/globals.css";
 import Providers from "./providers";
 
 export const metadata = {
-  title: "LegalAssist",
+  title: "StatuteSense - AI Legal Assistant",
   description: "AI Legal Assistant and Document Analyzer",
 };
 
