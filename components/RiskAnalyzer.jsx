@@ -33,22 +33,25 @@ export default function RiskAnalyzer({ documentText }) {
   return (
     <div>
       <div className="record-header">
-        <h3 className="record-title">Risk Scoring</h3>
+        <h3 className="record-title" style={{ fontFamily: "var(--font-header)" }}>PROSECUTION THREAT RADAR</h3>
         <button
-          className="record-primary-btn"
+          className="run-btn"
           onClick={analyzeRisk}
           disabled={loading || !documentText?.trim()}
+          style={{ minHeight: "44px", fontSize: "1.1rem", padding: "6px 16px" }}
         >
-          {loading ? "Analyzing..." : "Score Risk"}
+          {loading ? "ANALYZING THREATS..." : "CALCULATE THREAT LEVEL"}
         </button>
       </div>
 
       {!result && !loading && (
-        <div className="empty-state" style={{ minHeight: "200px" }}>
-          <div className="empty-state-icon">⚖️</div>
-          <div className="empty-state-title">Risk Analysis</div>
+        <div className="empty-state" style={{ minHeight: "200px", border: "2px dashed var(--prosecution-red)" }}>
+          <div className="empty-state-icon" style={{ fontSize: "2.5rem" }}>🛡️</div>
+          <div className="empty-state-title" style={{ fontFamily: "var(--font-action)", fontSize: "1.4rem", letterSpacing: "1px", color: "var(--prosecution-red)" }}>
+            PROSECUTION THREAT RADAR
+          </div>
           <p className="empty-state-desc">
-            Score your document for legal risk factors.
+            Scan document evidence for high-risk legal traps, liability exposures, and prosecution attack angles.
           </p>
         </div>
       )}

@@ -39,7 +39,7 @@ export default function ComplianceChecker({ documentText }) {
   return (
     <div>
       <div className="record-header">
-        <h3 className="record-title">Compliance Checker</h3>
+        <h3 className="record-title" style={{ fontFamily: "var(--font-header)" }}>VERDICT & STATUTORY VERIFICATION</h3>
       </div>
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap", alignItems: "center" }}>
@@ -47,14 +47,15 @@ export default function ComplianceChecker({ documentText }) {
           options={FRAMEWORKS.map((fw) => ({ value: fw.id, label: fw.name }))}
           value={selectedFramework}
           onChange={(e) => setSelectedFramework(e.target.value)}
-          style={{ minWidth: "160px" }}
+          style={{ minWidth: "180px" }}
         />
         <button
-          className="record-primary-btn"
+          className="run-btn"
           onClick={checkCompliance}
           disabled={loading || !documentText?.trim()}
+          style={{ minHeight: "44px", fontSize: "1.1rem", padding: "6px 18px" }}
         >
-          {loading ? "Checking..." : "Run Check"}
+          {loading ? "VERIFYING..." : "VERIFY STATUTE"}
         </button>
       </div>
 

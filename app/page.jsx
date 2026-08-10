@@ -285,8 +285,8 @@ export default function HomePage() {
             <div className="dashboard-grid">
               <form id="case-file" className="panel editor-panel" onSubmit={handleSubmit}>
                 <div className="panel-heading">
-                  <span className="panel-number">01</span>
-                  <h2 className="panel-title">Case File</h2>
+                  <span className="panel-number">EXHIBIT A</span>
+                  <h2 className="panel-title">COURT EVIDENCE DOSSIER</h2>
                 </div>
 
                 <div className="tab-bar">

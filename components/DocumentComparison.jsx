@@ -49,7 +49,10 @@ export default function DocumentComparison() {
       </div>
 
       <div className="compare-container">
-        <div className="compare-pane">
+        <div className="compare-pane" style={{ border: "2px solid var(--defense-blue)", boxShadow: "3px 3px 0 #000000", padding: "12px", background: "var(--panel)" }}>
+          <div style={{ marginBottom: "8px" }}>
+            <span className="court-speaker-badge badge-defense">EXHIBIT A: DEFENSE EVIDENCE</span>
+          </div>
           <input
             type="text"
             value={doc1.title}
@@ -61,10 +64,15 @@ export default function DocumentComparison() {
           <textarea
             value={doc1.text}
             onChange={(e) => setDoc1({ ...doc1, text: e.target.value })}
-            placeholder="Paste first document here..."
+            placeholder="Paste first document text here..."
+            className="editor-textarea"
+            style={{ minHeight: "220px" }}
           />
         </div>
-        <div className="compare-pane">
+        <div className="compare-pane" style={{ border: "2px solid var(--prosecution-red)", boxShadow: "3px 3px 0 #000000", padding: "12px", background: "var(--panel)" }}>
+          <div style={{ marginBottom: "8px" }}>
+            <span className="court-speaker-badge badge-prosecution">EXHIBIT B: PROSECUTION EVIDENCE</span>
+          </div>
           <input
             type="text"
             value={doc2.title}
@@ -76,7 +84,9 @@ export default function DocumentComparison() {
           <textarea
             value={doc2.text}
             onChange={(e) => setDoc2({ ...doc2, text: e.target.value })}
-            placeholder="Paste second document here..."
+            placeholder="Paste second document text here..."
+            className="editor-textarea"
+            style={{ minHeight: "220px" }}
           />
         </div>
       </div>

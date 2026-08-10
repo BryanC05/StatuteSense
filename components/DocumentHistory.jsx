@@ -88,8 +88,8 @@ export default function DocumentHistory({ onDocumentSelect }) {
     <div className="record-panel">
       <div className="record-header">
         <div>
-          <span className="panel-number">03</span>
-          <h2 className="record-title">Court Record</h2>
+          <span className="panel-number" style={{ background: "linear-gradient(135deg, var(--prosecution-red), var(--prosecution-red-dark))" }}>COURT ARCHIVE</span>
+          <h2 className="record-title" style={{ fontFamily: "var(--font-header)", letterSpacing: "0.5px" }}>OFFICIAL COURT RECORD</h2>
         </div>
         {documents.length > 0 && (
           <button onClick={handleClearAll} className="record-clear-btn">

@@ -90,7 +90,7 @@ export default function ClauseLibrary({ onInsert }) {
   return (
     <div>
       <div className="record-header">
-        <h3 className="record-title">Clause Library</h3>
+        <h3 className="record-title" style={{ fontFamily: "var(--font-header)" }}>PRECEDENT & CLAUSE ARCHIVE</h3>
         <button
           className="record-primary-btn"
           onClick={() => {
@@ -99,7 +99,7 @@ export default function ClauseLibrary({ onInsert }) {
             setFormData({ title: "", content: "", category: "General", tags: [] });
           }}
         >
-          {showForm ? "Cancel" : "+ Add Clause"}
+          {showForm ? "CANCEL" : "+ FILE PRECEDENT"}
         </button>
       </div>
 
