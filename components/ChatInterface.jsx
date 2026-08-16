@@ -77,45 +77,37 @@ export default function ChatInterface({ documentText, documentId, documentTitle 
   };
 
   const handleClear = () => {
-    if (!confirm("Clear courtroom cross-examination history for this document?")) return;
+    if (!confirm("Clear chat history for this document?")) return;
     deleteChatHistory(documentId);
     setMessages([]);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
   return (
-    <div className="chat-container" style={{ position: "relative" }}>
+    <div className="chat-container">
       {documentTitle && (
         <div style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           padding: "10px 16px",
-          background: "linear-gradient(135deg, rgba(29, 112, 245, 0.2), #070b15)",
-          border: "2px solid var(--defense-blue)",
-          boxShadow: "3px 3px 0 #000000",
+          background: "rgba(29, 112, 245, 0.1)",
+          border: "1px solid var(--defense-blue)",
           marginBottom: "14px"
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ color: "var(--gold)", fontWeight: "bold", fontSize: "0.95rem" }}>📜 ACTIVE INTERROGATION RECORD:</span>
-            <strong style={{ color: "var(--paper)", fontFamily: "var(--font-action)", fontSize: "1.1rem", letterSpacing: "0.5px" }}>{documentTitle}</strong>
+            <span style={{ color: "var(--gold)", fontWeight: "bold", fontSize: "0.95rem" }}>Active Document:</span>
+            <strong style={{ color: "var(--paper)", fontSize: "1rem" }}>{documentTitle}</strong>
           </div>
-          <span className="court-speaker-badge badge-defense" style={{ fontSize: "0.75rem" }}>CONTEXT LOADED</span>
+          <span className="court-speaker-badge badge-defense" style={{ fontSize: "0.75rem" }}>Loaded</span>
         </div>
       )}
 
       <div style={{ marginBottom: "12px", display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
-        <span style={{ fontSize: "0.8rem", color: "var(--gold)", fontFamily: "var(--font-action)", letterSpacing: "0.5px" }}>QUICK INTERROGATIONS:</span>
+        <span style={{ fontSize: "0.85rem", color: "var(--gold)", fontWeight: "600" }}>Quick Actions:</span>
         {[
           "What are the main liability risks in this case?",
           "What real statutes or case law precedents apply?",
-          "How can defense counter or renegotiate clause terms?",
+          "How can terms be renegotiated to mitigate risk?",
           "Does this scope require a Data Processing Addendum (DPA)?"
         ].map((promptText, idx) => (
           <button
@@ -131,15 +123,15 @@ export default function ChatInterface({ documentText, documentId, documentTitle 
         ))}
       </div>
 
-      <div className="chat-messages" style={{ minHeight: "360px", maxHeight: "520px", overflowY: "auto", paddingRight: "8px" }}>
+      <div className="chat-messages">
         {messages.length === 0 && (
-          <div className="empty-state" style={{ border: "2px dashed var(--gold)" }}>
-            <div className="empty-state-icon" style={{ fontSize: "2.5rem" }}>⚖️</div>
-            <div className="empty-state-title" style={{ fontFamily: "var(--font-action)", fontSize: "1.4rem", letterSpacing: "1px" }}>
-              CROSS-EXAMINATION CHAMBER
+          <div className="empty-state">
+            <div className="empty-state-icon" style={{ fontSize: "2.5rem" }}>💬</div>
+            <div className="empty-state-title">
+              AI Chat
             </div>
             <p className="empty-state-desc">
-              Interrogate the record, question clauses, and request precise legal analysis from AI co-counsel.
+              Ask questions about your document, analyze specific clauses, or discuss legal implications.
             </p>
           </div>
         )}
@@ -151,7 +143,7 @@ export default function ChatInterface({ documentText, documentId, documentTitle 
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
               <span className={`court-speaker-badge ${msg.role === "user" ? "badge-defense" : "badge-witness"}`}>
-                {msg.role === "user" ? "🛡️ DEFENSE COUNSEL" : "📜 AI CO-COUNSEL"}
+                {msg.role === "user" ? "You" : "AI Assistant"}
               </span>
             </div>
             <div style={{ fontSize: "0.95rem", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
@@ -162,9 +154,9 @@ export default function ChatInterface({ documentText, documentId, documentTitle 
 
         {loading && (
           <div className="court-dialogue-message court-dialogue-assistant" style={{ opacity: 0.85 }}>
-            <span className="court-speaker-badge badge-witness">📜 AI CO-COUNSEL</span>
-            <div className="loading-step-text" style={{ fontFamily: "var(--font-action)", fontSize: "1.1rem", letterSpacing: "1px", color: "var(--gold)" }}>
-              PRESSING WITNESS & ANALYZING EVIDENCE...
+            <span className="court-speaker-badge badge-witness">AI Assistant</span>
+            <div className="loading-step-text" style={{ fontSize: "0.95rem", color: "var(--gold)" }}>
+              Thinking...
             </div>
           </div>
         )}
@@ -184,30 +176,31 @@ export default function ChatInterface({ documentText, documentId, documentTitle 
       }}>
         <span>⚠️</span>
         <span>
-          <strong style={{ color: "var(--gold)" }}>AI Co-Counsel Advisory:</strong> AI responses may contain mistakes. Use for reference only and verify facts.
+          <strong style={{ color: "var(--gold)" }}>Note:</strong> AI responses may contain mistakes. Use for reference only and verify facts.
         </span>
       </div>
 
-      <div className="chat-input-row" style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
+      <form
+        className="chat-input-row"
+        onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+      >
         <input
           type="text"
           className="chat-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Present question or directive to co-counsel..."
+          placeholder="Ask a question about this document..."
           disabled={loading}
-          style={{ flex: 1, minHeight: "52px", fontSize: "0.95rem" }}
         />
         <button
+          type="submit"
           className="run-btn"
-          onClick={handleSend}
           disabled={loading || !input.trim()}
-          style={{ minHeight: "52px", padding: "10px 24px", minWidth: "140px" }}
+          style={{ minHeight: "52px", padding: "10px 24px", minWidth: "100px" }}
         >
-          INTERROGATE
+          Send
         </button>
-      </div>
+      </form>
 
       {messages.length > 0 && (
         <div style={{ marginTop: "12px", textAlign: "right" }}>
@@ -216,7 +209,7 @@ export default function ChatInterface({ documentText, documentId, documentTitle 
             className="record-clear-btn"
             style={{ fontSize: "0.75rem", padding: "4px 10px" }}
           >
-            Clear Record
+            Clear
           </button>
         </div>
       )}

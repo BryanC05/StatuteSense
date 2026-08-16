@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getPrompts, savePrompt, deletePrompt } from '../lib/storage';
 import CustomSelect from './CustomSelect';
 
@@ -51,14 +51,14 @@ export default function CustomPromptManager({ onSelectPrompt }) {
     }
   };
 
-  const filteredPrompts = prompts.filter((p) => {
+  const filteredPrompts = useMemo(() => prompts.filter((p) => {
     return filterCategory === 'all' || p.category === filterCategory;
-  });
+  }), [prompts, filterCategory]);
 
   return (
-    <div style={{ padding: '0.5rem 0' }}>
+    <div>
       <div className="record-header">
-        <h3 className="record-title" style={{ fontFamily: 'var(--font-header)', letterSpacing: '0.5px' }}>
+        <h3 className="record-title">
           DEFENSE DIRECTIVE TEMPLATES
         </h3>
         <button
@@ -70,8 +70,8 @@ export default function CustomPromptManager({ onSelectPrompt }) {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} style={{ marginBottom: '1.5rem', padding: '1.25rem', background: 'linear-gradient(180deg, #0e1526, #070b15)', border: '3px solid var(--gold)', boxShadow: '4px 4px 0 #000000' }}>
-          <div style={{ marginBottom: '1rem' }}>
+        <form onSubmit={handleSubmit} className="panel">
+          <div className="field-group">
             <label className="field-label">Directive Name</label>
             <input
               type="text"
@@ -82,7 +82,7 @@ export default function CustomPromptManager({ onSelectPrompt }) {
               placeholder="e.g. Cross-Examine Indemnity Clause"
             />
           </div>
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="field-group">
             <label className="field-label">Category</label>
             <CustomSelect
               options={CATEGORIES}
@@ -90,7 +90,7 @@ export default function CustomPromptManager({ onSelectPrompt }) {
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             />
           </div>
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="field-group">
             <label className="field-label">Description</label>
             <input
               type="text"
@@ -100,7 +100,7 @@ export default function CustomPromptManager({ onSelectPrompt }) {
               placeholder="Short strategy summary..."
             />
           </div>
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="field-group">
             <label className="field-label">Prompt Template Directive</label>
             <textarea
               value={formData.prompt}
@@ -108,21 +108,19 @@ export default function CustomPromptManager({ onSelectPrompt }) {
               required
               rows={4}
               className="editor-textarea"
-              style={{ minHeight: '100px' }}
               placeholder="Interrogate the following clause and extract all obligations..."
             />
           </div>
-          <button type="submit" className="run-btn" style={{ minHeight: '44px', fontSize: '1.1rem' }}>
+          <button type="submit" className="run-btn">
             SAVE DIRECTIVE
           </button>
         </form>
       )}
 
-      <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      <div className="record-controls">
         <button
           onClick={() => setFilterCategory('all')}
           className={`tab-btn ${filterCategory === 'all' ? 'active' : ''}`}
-          style={{ minHeight: '34px', fontSize: '0.95rem', padding: '4px 12px' }}
         >
           ALL
         </button>
@@ -131,7 +129,6 @@ export default function CustomPromptManager({ onSelectPrompt }) {
             key={cat}
             onClick={() => setFilterCategory(cat)}
             className={`tab-btn ${filterCategory === cat ? 'active' : ''}`}
-            style={{ minHeight: '34px', fontSize: '0.95rem', padding: '4px 12px' }}
           >
             {cat}
           </button>
@@ -139,42 +136,38 @@ export default function CustomPromptManager({ onSelectPrompt }) {
       </div>
 
       {loading ? (
-        <p style={{ color: 'var(--muted)', textAlign: 'center', padding: '2rem' }}>Loading directives archive...</p>
+        <p className="record-muted">Loading directives archive...</p>
       ) : filteredPrompts.length === 0 ? (
-        <div className="empty-state" style={{ minHeight: "180px", border: "2px dashed var(--gold)" }}>
-          <div className="empty-state-title" style={{ fontFamily: "var(--font-action)", fontSize: "1.2rem", letterSpacing: "1px" }}>
+        <div className="empty-state">
+          <div className="empty-state-title">
             NO CUSTOM DIRECTIVES REGISTERED
           </div>
           <p className="empty-state-desc">Create custom directives to streamline courtroom cross-examination prompts.</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: '12px' }}>
+        <div className="record-list">
           {filteredPrompts.map((p) => (
-            <div key={p.id} style={{ padding: '16px', background: 'linear-gradient(180deg, #0e1526, #070b15)', border: '2px solid var(--gold)', boxShadow: '3px 3px 0 #000000' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-action)', fontSize: '1.2rem', color: 'var(--paper)', letterSpacing: '0.5px' }}>{p.name}</div>
-                  {p.description && <div style={{ fontSize: '0.85rem', color: 'var(--muted)', margin: '4px 0' }}>{p.description}</div>}
-                  <span className="court-speaker-badge badge-defense" style={{ fontSize: '0.75rem', padding: '2px 8px' }}>
-                    {p.category}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    onClick={() => onSelectPrompt && onSelectPrompt(p.prompt)}
-                    className="record-primary-btn"
-                    style={{ fontSize: '0.85rem', padding: '4px 12px' }}
-                  >
-                    DEPLOY
-                  </button>
-                  <button
-                    onClick={() => handleDelete(p.id)}
-                    className="record-delete-btn"
-                    style={{ fontSize: '0.85rem', padding: '4px 12px' }}
-                  >
-                    DELETE
-                  </button>
-                </div>
+            <div key={p.id} className="record-item">
+              <div className="record-item-main">
+                <div className="record-item-title">{p.name}</div>
+                {p.description && <div className="record-meta">{p.description}</div>}
+                <span className="court-speaker-badge badge-defense">
+                  {p.category}
+                </span>
+              </div>
+              <div className="record-actions">
+                <button
+                  onClick={() => onSelectPrompt && onSelectPrompt(p.prompt)}
+                  className="record-primary-btn"
+                >
+                  DEPLOY
+                </button>
+                <button
+                  onClick={() => handleDelete(p.id)}
+                  className="record-delete-btn"
+                >
+                  DELETE
+                </button>
               </div>
             </div>
           ))}

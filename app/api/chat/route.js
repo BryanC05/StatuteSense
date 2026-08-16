@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
-import { generateAnalysis } from "../../../lib/ai";
+import { checkRateLimit } from "../../../lib/rateLimit";
+import { generateAnalysis, openai } from "../../../lib/ai";
 
 export async function POST(request) {
+  const limited = checkRateLimit(request);
+  if (limited) return limited;
   const { message, documentText, history } = await request.json();
 
   if (!message) {
@@ -23,16 +26,9 @@ ${documentText ? `The user is analyzing this document:\n\n${documentText}\n\n` :
   ];
 
   try {
-    const { default: OpenAI } = await import("openai");
-    const HOST = process.env.HUGGINGFACE_API_HOST || "router.huggingface.co/v1";
     const MODEL = process.env.HUGGINGFACE_MODEL || "Qwen/Qwen2.5-72B-Instruct";
 
-    const client = new OpenAI({
-      apiKey: process.env.HUGGINGFACE_API_KEY,
-      baseURL: HOST.startsWith("http") ? HOST : `https://${HOST}`,
-    });
-
-    const completion = await client.chat.completions.create({
+    const completion = await openai.chat.completions.create({
       model: MODEL,
       messages,
       temperature: 0.3,

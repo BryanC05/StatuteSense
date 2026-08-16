@@ -7,11 +7,13 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setThemeState] = useState("dark");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = getTheme();
+    const saved = getTheme() || "dark";
     setThemeState(saved);
     document.documentElement.setAttribute("data-theme", saved);
+    setMounted(true);
   }, []);
 
   const toggleTheme = () => {
@@ -22,7 +24,7 @@ export function ThemeProvider({ children }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, mounted }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -25,10 +25,10 @@ export default function SearchBar({ onDocumentSelect }) {
   return (
     <div>
       <div className="record-header">
-        <h3 className="record-title" style={{ fontFamily: "var(--font-header)" }}>EVIDENCE VAULT SEARCH</h3>
+        <h3 className="record-title">EVIDENCE VAULT SEARCH</h3>
       </div>
 
-      <div className="search-bar" style={{ display: "flex", gap: "10px" }}>
+      <div className="search-bar">
         <input
           type="text"
           className="search-input"
@@ -36,28 +36,27 @@ export default function SearchBar({ onDocumentSelect }) {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Search evidence, contracts, clauses, tags..."
-          style={{ flex: 1, minHeight: "52px" }}
         />
-        <button className="run-btn" onClick={handleSearch} style={{ minHeight: "52px", padding: "10px 24px" }}>
+        <button className="run-btn" onClick={handleSearch}>
           SEARCH VAULT
         </button>
       </div>
 
       {searched && (
-        <div style={{ color: "var(--muted)", marginBottom: "16px", fontSize: "0.9rem" }}>
+        <p className="record-muted">
           Found {totalResults} result{totalResults !== 1 ? "s" : ""}
-        </div>
+        </p>
       )}
 
       {searched && totalResults === 0 && (
-        <div className="empty-state" style={{ minHeight: "150px" }}>
+        <div className="empty-state">
           <p>No results found for &ldquo;{query}&rdquo;</p>
         </div>
       )}
 
       {results.documents.length > 0 && (
-        <div style={{ marginBottom: "20px" }}>
-          <h4 style={{ color: "var(--paper)", marginBottom: "10px", fontFamily: "'Cinzel', serif", textTransform: "uppercase", fontSize: "0.9rem" }}>
+        <div>
+          <h4 className="record-title">
             Documents ({results.documents.length})
           </h4>
           <div className="record-list">
@@ -65,8 +64,10 @@ export default function SearchBar({ onDocumentSelect }) {
               <div
                 key={doc.id}
                 className="record-item"
-                style={{ cursor: "pointer" }}
                 onClick={() => onDocumentSelect?.(doc)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onDocumentSelect?.(doc); } }}
               >
                 <div className="record-item-main">
                   <div className="record-item-title">{doc.title}</div>
@@ -84,14 +85,14 @@ export default function SearchBar({ onDocumentSelect }) {
 
       {results.clauses.length > 0 && (
         <div>
-          <h4 style={{ color: "var(--paper)", marginBottom: "10px", fontFamily: "'Cinzel', serif", textTransform: "uppercase", fontSize: "0.9rem" }}>
+          <h4 className="record-title">
             Clauses ({results.clauses.length})
           </h4>
           <div className="clause-library">
             {results.clauses.map((clause) => (
               <div key={clause.id} className="clause-card">
                 <div className="clause-card-title">{clause.title}</div>
-                <div style={{ color: "var(--gold)", fontSize: "0.8rem" }}>{clause.category}</div>
+                <div className="record-meta">{clause.category}</div>
                 <div className="clause-card-content">{clause.content}</div>
               </div>
             ))}

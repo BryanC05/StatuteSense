@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getDeadlines } from "../lib/storage";
 
 export default function DeadlineTracker() {
@@ -10,8 +10,11 @@ export default function DeadlineTracker() {
     setDeadlines(getDeadlines());
   }, []);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
 
   const getUrgency = (dateStr) => {
     const date = new Date(dateStr);
@@ -29,25 +32,25 @@ export default function DeadlineTracker() {
     });
   };
 
-  const sortedDeadlines = [...deadlines].sort(
+  const sortedDeadlines = useMemo(() => [...deadlines].sort(
     (a, b) => new Date(a.date) - new Date(b.date)
-  );
+  ), [deadlines]);
 
   return (
     <div>
       <div className="record-header">
-        <h3 className="record-title" style={{ fontFamily: "var(--font-header)", letterSpacing: "0.5px" }}>
+        <h3 className="record-title">
           STATUTE OF LIMITATIONS & DEADLINE CLOCK
         </h3>
-        <span className="court-speaker-badge badge-witness" style={{ fontSize: "0.9rem" }}>
+        <span className="court-speaker-badge badge-witness">
           {deadlines.length} DEADLINE{deadlines.length !== 1 ? "S" : ""} DETECTED
         </span>
       </div>
 
       {sortedDeadlines.length === 0 ? (
-        <div className="empty-state" style={{ minHeight: "220px", border: "2px dashed var(--gold)" }}>
-          <div className="empty-state-icon" style={{ fontSize: "2.5rem" }}>📅</div>
-          <div className="empty-state-title" style={{ fontFamily: "var(--font-action)", fontSize: "1.4rem", letterSpacing: "1px" }}>
+        <div className="empty-state">
+          <div className="empty-state-icon">📅</div>
+          <div className="empty-state-title">
             NO PENDING STATUTES DETECTED
           </div>
           <p className="empty-state-desc">
@@ -55,29 +58,20 @@ export default function DeadlineTracker() {
           </p>
         </div>
       ) : (
-        <div className="deadline-list" style={{ display: "grid", gap: "14px" }}>
+        <div className="deadline-list">
           {sortedDeadlines.map((item) => {
             const urgency = getUrgency(item.date);
             const isExpired = urgency === "EXPIRED STATUTE";
             const isCritical = urgency === "CRITICAL COUNTDOWN";
+            const urgencyClass = isExpired ? "past" : isCritical ? "urgent" : "upcoming";
 
             return (
               <div
                 key={item.id}
-                style={{
-                  padding: "16px 20px",
-                  background: "linear-gradient(180deg, #0e1526 0%, #070b15 100%)",
-                  border: `3px solid ${isExpired ? "var(--prosecution-red)" : isCritical ? "var(--gold)" : "var(--defense-blue)"}`,
-                  boxShadow: "4px 4px 0 #000000",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  gap: "16px",
-                  flexWrap: "wrap",
-                }}
+                className={`deadline-item ${urgencyClass}`}
               >
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
+                  <div className="record-actions">
                     <span
                       className={`court-speaker-badge ${
                         isExpired ? "badge-prosecution" : isCritical ? "badge-witness" : "badge-defense"
@@ -85,29 +79,18 @@ export default function DeadlineTracker() {
                     >
                       {urgency}
                     </span>
-                    <span style={{ fontFamily: "var(--font-action)", fontSize: "1.3rem", color: "var(--paper)", letterSpacing: "1px" }}>
+                    <span className="deadline-date">
                       {formatDate(item.date)}
                     </span>
                   </div>
-                  <div style={{ fontFamily: "var(--font-action)", fontSize: "1.1rem", color: "var(--gold)", letterSpacing: "0.5px" }}>
+                  <div className="field-label">
                     📜 {item.documentTitle}
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    flex: 1,
-                    minWidth: "240px",
-                    padding: "10px 14px",
-                    background: "#060a14",
-                    border: "1px stroke rgba(255,203,61,0.2)",
-                    fontSize: "0.9rem",
-                    color: "var(--text)",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  <span style={{ color: "var(--muted)", fontStyle: "italic" }}>Context: </span>
-                  "...{item.context.replace(/\n/g, " ").trim()}..."
+                <div className="deadline-context">
+                  <span>Context: </span>
+                  &ldquo;{item.context.replace(/\n/g, " ").trim()}&rdquo;
                 </div>
               </div>
             );

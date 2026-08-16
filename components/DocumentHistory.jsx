@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { getDocuments, getAnalyses, deleteDocument, getFolders, updateDocument } from "../lib/storage";
 import FolderManager from "./FolderManager";
 import CustomSelect from "./CustomSelect";
@@ -40,14 +40,14 @@ export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
     fetchFolders();
   }, [fetchFolders, documents]);
 
-  const filteredDocuments = documents.filter((doc) => {
+  const filteredDocuments = useMemo(() => documents.filter((doc) => {
     const matchesSearch =
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doc.documentType.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === "all" || doc.documentType === filterType;
     const matchesFolder = selectedFolderId === null || doc.folderId === selectedFolderId;
     return matchesSearch && matchesType && matchesFolder;
-  });
+  }), [documents, searchTerm, filterType, selectedFolderId]);
 
   const handleQuickReAnalyze = (doc) => {
     if (onDocumentSelect) {
@@ -88,8 +88,8 @@ export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
     <div className="record-panel">
       <div className="record-header">
         <div>
-          <span className="panel-number" style={{ background: "linear-gradient(135deg, var(--prosecution-red), var(--prosecution-red-dark))" }}>COURT ARCHIVE</span>
-          <h2 className="record-title" style={{ fontFamily: "var(--font-header)", letterSpacing: "0.5px" }}>OFFICIAL COURT RECORD</h2>
+          <span className="panel-number">Archive</span>
+          <h2 className="record-title">Document Record</h2>
         </div>
         {documents.length > 0 && (
           <button onClick={handleClearAll} className="record-clear-btn">
@@ -103,7 +103,7 @@ export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
       <div className="record-controls">
         <input
           type="text"
-          placeholder="Search case files..."
+          placeholder="Search documents..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="record-search"
@@ -124,17 +124,17 @@ export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
 
       <div className="record-list">
         {loading ? (
-          <p className="record-muted">Opening the archive...</p>
+          <p className="record-muted">Loading documents...</p>
         ) : filteredDocuments.length === 0 ? (
           <p className="record-muted">
             {searchTerm || filterType !== "all"
-              ? "No matching case files found."
-              : "No case files yet. Present evidence to begin."}
+              ? "No matching documents found."
+              : "No documents yet. Add a document to begin."}
           </p>
         ) : (
           filteredDocuments.map((doc) => (
             <div key={doc.id} className="record-item" style={{ flexDirection: "column", alignItems: "stretch" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
                 <div className="record-item-main">
                   <h3 className="record-item-title">{doc.title}</h3>
                   <p className="record-meta">
@@ -165,12 +165,11 @@ export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
                       { value: "", label: "No Folder" },
                       ...folders.map((f) => ({ value: f.id, label: f.name }))
                     ]}
-                    style={{ minWidth: "120px" }}
                   />
                   <button onClick={() => onInterrogate ? onInterrogate(doc) : handleQuickReAnalyze(doc)} className="record-primary-btn">
                     💬 Interrogate
                   </button>
-                  <button onClick={() => handleQuickReAnalyze(doc)} className="tab-btn-clean" style={{ minHeight: "36px", padding: "4px 12px", fontSize: "0.85rem" }}>
+                  <button onClick={() => handleQuickReAnalyze(doc)} className="tab-btn-clean">
                     Reopen
                   </button>
                   <button onClick={() => handleDelete(doc.id)} className="record-delete-btn">
@@ -180,13 +179,12 @@ export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
               </div>
 
               {/* Expandable content showing both original and AI response */}
-              <div style={{ marginTop: "12px" }}>
+              <div style={{ marginTop: "12px", width: "100%" }}>
                 <button
                   onClick={() => toggleExpand(doc.id)}
                   className="record-clear-btn"
-                  style={{ minHeight: "36px", padding: "6px 14px", fontSize: "0.9rem" }}
                 >
-                  {expandedId === doc.id ? "▲ HIDE CASE DETAILS" : "▼ SHOW CASE & AI RESPONSE"}
+                  {expandedId === doc.id ? "▲ Hide Details" : "▼ Show Details & AI Response"}
                 </button>
 
                 {expandedId === doc.id && (
@@ -199,14 +197,13 @@ export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
                       borderLeft: "4px solid var(--cyan)",
                     }}>
                       <div style={{
-                        fontFamily: "'Cinzel', serif",
                         fontSize: "0.8rem",
                         color: "var(--cyan)",
                         textTransform: "uppercase",
                         marginBottom: "8px",
                         fontWeight: 700,
                       }}>
-                        Original Case Text
+                        Original Text
                       </div>
                       <div style={{
                         color: "var(--muted)",
@@ -229,7 +226,6 @@ export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
                         borderLeft: "4px solid var(--gold)",
                       }}>
                         <div style={{
-                          fontFamily: "'Cinzel', serif",
                           fontSize: "0.8rem",
                           color: "var(--gold)",
                           textTransform: "uppercase",
@@ -269,7 +265,7 @@ export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
                         fontSize: "0.85rem",
                         fontStyle: "italic",
                       }}>
-                        No AI analysis available for this case.
+                        No AI analysis available for this document.
                       </div>
                     )}
 
@@ -278,7 +274,6 @@ export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
                       <button
                         onClick={() => handleQuickReAnalyze(doc)}
                         className="record-primary-btn"
-                        style={{ fontSize: "0.75rem", padding: "6px 12px" }}
                       >
                         Edit Original Text
                       </button>
@@ -286,7 +281,6 @@ export default function DocumentHistory({ onDocumentSelect, onInterrogate }) {
                         <button
                           onClick={() => handleViewAnalysis(doc)}
                           className="record-clear-btn"
-                          style={{ fontSize: "0.75rem", padding: "6px 12px" }}
                         >
                           View Full Analysis
                         </button>

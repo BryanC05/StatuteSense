@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateAnalysis } from "../../../lib/ai";
+import { extractJson } from "../../../lib/jsonExtract";
+import { checkRateLimit } from "../../../lib/rateLimit";
 
 const FRAMEWORKS = {
   gdpr: {
@@ -39,6 +41,8 @@ const FRAMEWORKS = {
 };
 
 export async function POST(request) {
+  const limited = checkRateLimit(request);
+  if (limited) return limited;
   const { text, framework } = await request.json();
 
   if (!text || !text.trim()) {
@@ -72,20 +76,9 @@ ${text}`;
 
   try {
     const output = await generateAnalysis(prompt);
-    const jsonMatch = output.match(/\{[\s\S]*\}/);
-
-    if (jsonMatch) {
-      try {
-        const result = JSON.parse(jsonMatch[0]);
-        return NextResponse.json(result);
-      } catch {
-        return NextResponse.json({
-          framework: fw.name,
-          overallScore: 0,
-          results: fw.checks.map((c) => ({ requirement: c, status: "no", evidence: "" })),
-          gaps: ["Unable to parse compliance results"],
-        });
-      }
+    const result = extractJson(output);
+    if (result) {
+      return NextResponse.json(result);
     }
 
     return NextResponse.json({
@@ -100,6 +93,8 @@ ${text}`;
   }
 }
 
-export async function GET() {
+export async function GET(request) {
+  const limited = checkRateLimit(request);
+  if (limited) return limited;
   return NextResponse.json({ frameworks: Object.keys(FRAMEWORKS) });
 }

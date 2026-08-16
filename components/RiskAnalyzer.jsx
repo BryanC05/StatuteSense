@@ -33,25 +33,24 @@ export default function RiskAnalyzer({ documentText }) {
   return (
     <div>
       <div className="record-header">
-        <h3 className="record-title" style={{ fontFamily: "var(--font-header)" }}>PROSECUTION THREAT RADAR</h3>
+        <h3 className="record-title">Risk & Threat Analysis</h3>
         <button
           className="run-btn"
           onClick={analyzeRisk}
           disabled={loading || !documentText?.trim()}
-          style={{ minHeight: "44px", fontSize: "1.1rem", padding: "6px 16px" }}
         >
-          {loading ? "ANALYZING THREATS..." : "CALCULATE THREAT LEVEL"}
+          {loading ? "Analyzing..." : "Analyze Risk"}
         </button>
       </div>
 
       {!result && !loading && (
-        <div className="empty-state" style={{ minHeight: "200px", border: "2px dashed var(--prosecution-red)" }}>
-          <div className="empty-state-icon" style={{ fontSize: "2.5rem" }}>🛡️</div>
-          <div className="empty-state-title" style={{ fontFamily: "var(--font-action)", fontSize: "1.4rem", letterSpacing: "1px", color: "var(--prosecution-red)" }}>
-            PROSECUTION THREAT RADAR
+        <div className="empty-state">
+          <div className="empty-state-icon">🛡️</div>
+          <div className="empty-state-title">
+            Risk & Threat Analysis
           </div>
           <p className="empty-state-desc">
-            Scan document evidence for high-risk legal traps, liability exposures, and prosecution attack angles.
+            Scan document for legal risks, liability exposures, and potential contract issues.
           </p>
         </div>
       )}
@@ -73,7 +72,7 @@ export default function RiskAnalyzer({ documentText }) {
 
           {result.risks && result.risks.length > 0 && (
             <div className="risk-factors">
-              <h4 style={{ marginBottom: "8px", color: "var(--paper)", fontFamily: "'Cinzel', serif", textTransform: "uppercase", fontSize: "0.9rem" }}>
+              <h4 style={{ marginBottom: "8px", color: "var(--paper)", fontSize: "0.9rem", fontWeight: 700, textTransform: "uppercase" }}>
                 Risk Factors
               </h4>
               {result.risks.map((risk, idx) => (

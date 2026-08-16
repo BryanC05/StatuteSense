@@ -8,6 +8,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "dompurify": "^3.4.13",
     "marked": "^18.0.6",
     "next": "14.2.5",
     "openai": "^4.8.0",

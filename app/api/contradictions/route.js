@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { generateAnalysis } from "../../../lib/ai";
+import { extractJson } from "../../../lib/jsonExtract";
+
+import { checkRateLimit } from "../../../lib/rateLimit";
 
 export async function POST(request) {
+  const limited = checkRateLimit(request);
+  if (limited) return limited;
   const { text, jurisdiction = "US Federal" } = await request.json();
 
   if (!text || !text.trim()) {
@@ -32,19 +37,9 @@ ${text}`;
 
   try {
     const output = await generateAnalysis(prompt);
-    const jsonMatch = output.match(/\{[\s\S]*\}/);
-
-    if (jsonMatch) {
-      try {
-        const result = JSON.parse(jsonMatch[0]);
-        return NextResponse.json(result);
-      } catch {
-        return NextResponse.json({
-          hasContradictions: true,
-          summary: output,
-          contradictions: []
-        });
-      }
+    const result = extractJson(output);
+    if (result) {
+      return NextResponse.json(result);
     }
 
     return NextResponse.json({

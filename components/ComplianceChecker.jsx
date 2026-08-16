@@ -39,7 +39,7 @@ export default function ComplianceChecker({ documentText }) {
   return (
     <div>
       <div className="record-header">
-        <h3 className="record-title" style={{ fontFamily: "var(--font-header)" }}>VERDICT & STATUTORY VERIFICATION</h3>
+        <h3 className="record-title">Statutory Compliance Check</h3>
       </div>
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap", alignItems: "center" }}>
@@ -53,9 +53,8 @@ export default function ComplianceChecker({ documentText }) {
           className="run-btn"
           onClick={checkCompliance}
           disabled={loading || !documentText?.trim()}
-          style={{ minHeight: "44px", fontSize: "1.1rem", padding: "6px 18px" }}
         >
-          {loading ? "VERIFYING..." : "VERIFY STATUTE"}
+          {loading ? "Verifying..." : "Verify Compliance"}
         </button>
       </div>
 
@@ -64,7 +63,7 @@ export default function ComplianceChecker({ documentText }) {
       </div>
 
       {!result && !loading && (
-        <div className="empty-state" style={{ minHeight: "200px" }}>
+        <div className="empty-state">
           <div className="empty-state-icon">✅</div>
           <div className="empty-state-title">Compliance Check</div>
           <p className="empty-state-desc">
@@ -104,8 +103,8 @@ export default function ComplianceChecker({ documentText }) {
           </div>
 
           {result.gaps && result.gaps.length > 0 && (
-            <div style={{ marginTop: "16px", padding: "16px", background: "rgba(113, 26, 34, 0.2)", border: "2px solid var(--red)" }}>
-              <h4 style={{ color: "var(--red)", marginBottom: "8px", fontFamily: "'Cinzel', serif", textTransform: "uppercase", fontSize: "0.9rem" }}>
+            <div style={{ marginTop: "16px", padding: "16px", background: "rgba(113, 26, 34, 0.2)", border: "1px solid var(--red)" }}>
+              <h4 style={{ color: "var(--red)", marginBottom: "8px", fontSize: "0.9rem", fontWeight: 700, textTransform: "uppercase" }}>
                 Gaps Identified
               </h4>
               <ul style={{ paddingLeft: "20px", color: "var(--muted)" }}>

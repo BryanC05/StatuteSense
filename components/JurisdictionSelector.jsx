@@ -14,7 +14,7 @@ export const JURISDICTIONS = [
 export default function JurisdictionSelector({ value, onChange, style }) {
   return (
     <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", ...style }}>
-      <span style={{ fontSize: "0.85rem", color: "var(--gold)", fontFamily: "var(--font-action)", letterSpacing: "0.5px" }}>
+      <span>
         JURISDICTION:
       </span>
       <CustomSelect

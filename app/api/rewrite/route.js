@@ -1,7 +1,19 @@
 import { NextResponse } from "next/server";
 import { generateAnalysis } from "../../../lib/ai";
+import { checkRateLimit } from "../../../lib/rateLimit";
+
+function escapeForJsonString(str) {
+  return str
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\t/g, '\\t');
+}
 
 export async function POST(request) {
+  const limited = checkRateLimit(request);
+  if (limited) return limited;
   const { clauseText, clauseTitle = "Target Clause", jurisdiction = "US Federal" } = await request.json();
 
   if (!clauseText || !clauseText.trim()) {
@@ -21,7 +33,7 @@ ${clauseText}
 Return JSON in this format:
 {
   "clauseTitle": "${clauseTitle}",
-  "original": "${clauseText.replace(/"/g, '\\"')}",
+  "original": "${escapeForJsonString(clauseText)}",
   "balanced": "Balanced rewrite text...",
   "aggressive": "Aggressive defense rewrite text...",
   "compromise": "Compromise fallback text...",

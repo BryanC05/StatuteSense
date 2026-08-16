@@ -46,11 +46,11 @@ export default function ClauseRedliner({ onInsertRewrite, jurisdiction = "US Fed
   return (
     <div style={{ padding: "8px" }}>
       <div style={{ marginBottom: "16px" }}>
-        <h3 style={{ fontFamily: "var(--font-action)", color: "var(--gold)", fontSize: "1.3rem", letterSpacing: "1px", margin: 0 }}>
-          ⚔️ DEFENSE CLAUSE REDLINE REWRITER
+        <h3 style={{ color: "var(--gold)", fontSize: "1.3rem", margin: 0 }}>
+          Clause Redline & Rewrite
         </h3>
         <p style={{ fontSize: "0.85rem", color: "var(--muted)", margin: "4px 0 0 0" }}>
-          Select an aggressive prosecution clause and generate 3 tailored defense rewrites under {jurisdiction} law.
+          Select or paste a clause to generate 3 tailored alternative rewrites under {jurisdiction} law.
         </p>
       </div>
 
@@ -66,7 +66,7 @@ export default function ClauseRedliner({ onInsertRewrite, jurisdiction = "US Fed
         <textarea
           className="custom-prompt-input"
           rows={4}
-          placeholder="Paste aggressive or one-sided clause text here..."
+          placeholder="Paste clause text here to generate revisions..."
           value={clauseText}
           onChange={(e) => setClauseText(e.target.value)}
           style={{ width: "100%", fontSize: "0.9rem" }}
@@ -78,7 +78,7 @@ export default function ClauseRedliner({ onInsertRewrite, jurisdiction = "US Fed
             disabled={loading || !clauseText.trim()}
             style={{ minHeight: "44px", padding: "8px 24px" }}
           >
-            {loading ? "GENERATING DEFENSE REWRITES..." : "GENERATE DEFENSE REWRITES"}
+            {loading ? "Generating Rewrites..." : "Generate Rewrites"}
           </button>
         </div>
       </div>
@@ -90,32 +90,32 @@ export default function ClauseRedliner({ onInsertRewrite, jurisdiction = "US Fed
       )}
 
       {result && (
-        <div style={{ marginTop: "20px", padding: "18px", background: "rgba(10, 15, 26, 0.9)", border: "2px solid var(--gold)", boxShadow: "4px 4px 0 #000" }}>
+        <div style={{ marginTop: "20px", padding: "18px", background: "rgba(10, 15, 26, 0.9)", border: "1px solid var(--line)" }}>
           <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
             <button
               className={`tab-btn-clean ${activeTab === "balanced" ? "active" : ""}`}
               onClick={() => setActiveTab("balanced")}
             >
-              🛡️ Balanced Commercial
+              Balanced Commercial
             </button>
             <button
               className={`tab-btn-clean ${activeTab === "aggressive" ? "active" : ""}`}
               onClick={() => setActiveTab("aggressive")}
             >
-              ⚔️ Strong Defense
+              Suggested Rewrite (Protective)
             </button>
             <button
               className={`tab-btn-clean ${activeTab === "compromise" ? "active" : ""}`}
               onClick={() => setActiveTab("compromise")}
             >
-              🤝 Middle Compromise
+              Compromise Fallback
             </button>
           </div>
 
           <div style={{ padding: "14px", background: "rgba(255, 255, 255, 0.04)", borderLeft: "3px solid var(--gold)", marginBottom: "12px" }}>
-            <div style={{ fontSize: "0.8rem", color: "var(--gold)", fontFamily: "var(--font-action)", marginBottom: "6px" }}>
+            <div style={{ fontSize: "0.8rem", color: "var(--gold)", marginBottom: "6px", fontWeight: "600" }}>
               {activeTab === "balanced" && "BALANCED COMMERCIAL BENCHMARK:"}
-              {activeTab === "aggressive" && "STRONG DEFENSE REWRITE (CLIENT FAVORABLE):"}
+              {activeTab === "aggressive" && "SUGGESTED REWRITE (CLIENT FAVORABLE):"}
               {activeTab === "compromise" && "MIDDLE-GROUND COMPROMISE FALLBACK:"}
             </div>
             <p style={{ fontSize: "0.95rem", color: "var(--paper)", lineHeight: "1.6", margin: 0 }}>
@@ -123,16 +123,16 @@ export default function ClauseRedliner({ onInsertRewrite, jurisdiction = "US Fed
             </p>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", gap: "12px" }}>
             <span style={{ fontSize: "0.8rem", color: "var(--muted)" }}>
               {result.explanation}
             </span>
             <button
               className="record-primary-btn"
               onClick={() => onInsertRewrite?.(result[activeTab])}
-              style={{ minHeight: "36px", padding: "4px 16px" }}
+              style={{ minHeight: "36px", padding: "4px 16px", whiteSpace: "nowrap" }}
             >
-              📋 INSERT REWRITE INTO DOSSIER
+              📋 Insert Rewrite into Document
             </button>
           </div>
         </div>

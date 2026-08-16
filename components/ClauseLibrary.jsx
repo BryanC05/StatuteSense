@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getClauses, saveClause, updateClause, deleteClause } from "../lib/storage";
 import CustomSelect from "./CustomSelect";
 
@@ -79,18 +79,18 @@ export default function ClauseLibrary({ onInsert }) {
     setFormData({ ...formData, tags: formData.tags.filter((_, i) => i !== idx) });
   };
 
-  const filteredClauses = clauses.filter((c) => {
+  const filteredClauses = useMemo(() => clauses.filter((c) => {
     const matchesSearch =
       c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.content.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = filterCategory === "all" || c.category === filterCategory;
     return matchesSearch && matchesCategory;
-  });
+  }), [clauses, searchTerm, filterCategory]);
 
   return (
     <div>
       <div className="record-header">
-        <h3 className="record-title" style={{ fontFamily: "var(--font-header)" }}>PRECEDENT & CLAUSE ARCHIVE</h3>
+        <h3 className="record-title">PRECEDENT & CLAUSE ARCHIVE</h3>
         <button
           className="record-primary-btn"
           onClick={() => {
@@ -104,7 +104,7 @@ export default function ClauseLibrary({ onInsert }) {
       </div>
 
       {showForm && (
-        <div className="panel" style={{ marginBottom: "20px", background: "var(--panel-2)" }}>
+        <div className="panel">
           <div className="field-group">
             <label className="field-label">Title</label>
             <input
@@ -131,7 +131,6 @@ export default function ClauseLibrary({ onInsert }) {
               placeholder="Paste the clause text here..."
               rows={5}
               className="editor-textarea"
-              style={{ minHeight: "120px" }}
             />
           </div>
           <div className="field-group">
@@ -180,16 +179,16 @@ export default function ClauseLibrary({ onInsert }) {
 
       <div className="clause-library">
         {filteredClauses.length === 0 ? (
-          <p className="record-muted" style={{ padding: "20px", textAlign: "center" }}>
+          <p className="record-muted">
             No clauses in library. Add your first clause above.
           </p>
         ) : (
           filteredClauses.map((clause) => (
             <div key={clause.id} className="clause-card">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <div style={{ flex: 1 }}>
+              <div className="record-header">
+                <div className="record-item-main">
                   <div className="clause-card-title">{clause.title}</div>
-                  <div style={{ fontSize: "0.8rem", color: "var(--gold)", marginBottom: "8px" }}>
+                  <div className="record-meta">
                     {clause.category}
                   </div>
                   <div className="clause-card-content">{clause.content}</div>

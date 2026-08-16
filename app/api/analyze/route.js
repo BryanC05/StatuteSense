@@ -21,7 +21,11 @@ CRITICAL LEGAL CITATION & CONTEXTUAL APPLICABILITY RULES:
 5. At the very end of your response, provide a valid JSON code block enclosed in \`\`\`json ... \`\`\` containing the structured JSON Legal Schema with keys: "document_type", "meta", "clauses", and "legal_citations" (with "statutes", "conditional_statutes", and "case_law").`;
 }
 
+import { checkRateLimit } from "../../../lib/rateLimit";
+
 export async function POST(request) {
+  const limited = checkRateLimit(request);
+  if (limited) return limited;
   const formData = await request.formData();
   const text = formData.get("text")?.toString() || "";
   const task = formData.get("task")?.toString() || "Summarize the document and highlight key clauses.";
@@ -39,6 +43,10 @@ export async function POST(request) {
     fileType = documentFile.type === "application/pdf" ? "PDF" : "TXT";
 
     if (documentFile.type === "application/pdf") {
+      const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+      if (fileSize > MAX_FILE_SIZE) {
+        return NextResponse.json({ error: "File exceeds 10MB limit." }, { status: 413 });
+      }
       const parsed = await pdfParse(Buffer.from(await documentFile.arrayBuffer()));
       documentText = parsed.text || "";
     } else {

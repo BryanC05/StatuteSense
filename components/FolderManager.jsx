@@ -47,9 +47,9 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
   };
 
   return (
-    <div style={{ marginBottom: "20px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-        <span className="field-label" style={{ color: "var(--gold)", fontFamily: "var(--font-action)", fontSize: "1.1rem", letterSpacing: "1px" }}>
+    <div>
+      <div className="record-header">
+        <span className="field-label">
           CASE DOSSIER BINDERS
         </span>
         <button
@@ -59,30 +59,27 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
             setFormData({ name: "", color: COLORS[0] });
           }}
           className="record-clear-btn"
-          style={{ minHeight: "28px", padding: "2px 10px", fontSize: "0.85rem" }}
         >
           {showForm ? "CANCEL" : "+ NEW BINDER"}
         </button>
       </div>
 
       {showForm && (
-        <div style={{ display: "flex", gap: "8px", marginBottom: "10px", flexWrap: "wrap" }}>
+        <div className="record-controls">
           <input
             type="text"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="Folder name"
             className="record-search"
-            style={{ flex: 1, minWidth: "150px" }}
           />
           <CustomSelect
             compact
             options={COLORS.map((c) => ({ value: c, label: c }))}
             value={formData.color}
             onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-            style={{ minWidth: "120px" }}
           />
-          <button className="record-primary-btn" onClick={handleSave} style={{ padding: "6px 12px" }}>
+          <button className="record-primary-btn" onClick={handleSave}>
             {editingId ? "Update" : "Add"}
           </button>
         </div>
@@ -92,6 +89,9 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
         <div
           className={`folder-chip ${selectedFolderId === null ? "active" : ""}`}
           onClick={() => onSelectFolder?.(null)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectFolder?.(null); } }}
         >
           <span>All Documents</span>
         </div>
@@ -100,6 +100,9 @@ export default function FolderManager({ selectedFolderId, onSelectFolder }) {
             key={folder.id}
             className={`folder-chip ${selectedFolderId === folder.id ? "active" : ""}`}
             onClick={() => onSelectFolder?.(folder.id)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectFolder?.(folder.id); } }}
           >
             <span className="folder-chip-color" style={{ background: folder.color }} />
             <span>{folder.name}</span>

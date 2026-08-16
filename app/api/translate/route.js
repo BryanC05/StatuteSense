@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { generateAnalysis } from "../../../lib/ai";
 
+import { checkRateLimit } from "../../../lib/rateLimit";
+
 export async function POST(request) {
+  const limited = checkRateLimit(request);
+  if (limited) return limited;
   const { text } = await request.json();
 
   if (!text || !text.trim()) {

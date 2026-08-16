@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { generateAnalysis, getCurrentModel } from "../../../lib/ai";
 
+import { checkRateLimit } from "../../../lib/rateLimit";
+
 export async function POST(request) {
+  const limited = checkRateLimit(request);
+  if (limited) return limited;
   const { text } = await request.json();
 
   if (!text || !text.trim()) {
@@ -49,10 +53,10 @@ function parseClausesFromText(text) {
   let current = null;
 
   for (const line of lines) {
-    const titleMatch = line.match(/^\d+[\.\)]\s*(.+)$/) || line.match(/^[-•]\s*(.+)$/);
-    if (titleMatch && titleMatch[1].length < 100) {
+    const titleMatch = line.match(/^(\d+[\.\)]\s*[-•]?\s*|[a-zA-Z]\.\s*|[-•]\s*)(.+)$/i);
+    if (titleMatch && titleMatch[2].length < 100) {
       if (current) clauses.push(current);
-      current = { title: titleMatch[1].trim(), text: "", summary: "" };
+      current = { title: titleMatch[2].trim(), text: "", summary: "" };
     } else if (current) {
       current.text += line + "\n";
     }

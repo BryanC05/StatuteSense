@@ -21,107 +21,9 @@ import BatchAnalyzer from "../components/BatchAnalyzer";
 import { exportToPDF } from "../lib/pdfExport";
 import { saveDocument, saveAnalysis, getAnalyses } from "../lib/storage";
 import { useTheme } from "./context/ThemeContext";
-
-const TASKS = [
-  "Summarize the document and highlight key clauses.",
-  "Extract obligations and deadlines.",
-  "Identify risk areas and provide advice.",
-  "Compare this document to a standard contract.",
-];
-
-const DOCTYPES = ["Contract", "NDA", "Lease", "Privacy Policy", "Other"];
-
-const LOADING_STEPS = [
-  "Opening the case file...",
-  "Cross-checking clauses and entities...",
-  "Pressing weak points for risk signals...",
-  "Mapping obligations, deadlines, and duties...",
-  "Preparing the final court record...",
-];
-
-const AttorneyBadgeIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="url(#badgeGold)" stroke="#ffffff" strokeWidth="1" />
-    <circle cx="12" cy="12" r="4" fill="#1d70f5" stroke="#ffffff" strokeWidth="1" />
-    <defs>
-      <linearGradient id="badgeGold" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#ffea75" />
-        <stop offset="50%" stopColor="#ffcb3d" />
-        <stop offset="100%" stopColor="#c78c00" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
-
-const ScalesIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="3" x2="12" y2="21" />
-    <line x1="12" y1="21" x2="16" y2="21" />
-    <line x1="12" y1="21" x2="8" y2="21" />
-    <line x1="12" y1="7" x2="4" y2="10" />
-    <line x1="12" y1="7" x2="20" y2="10" />
-    <path d="M4 10l-2 5h4l-2 -5" />
-    <path d="M20 10l-2 5h4l-2 -5" />
-    <line x1="4" y1="15" x2="4" y2="20" />
-    <line x1="20" y1="15" x2="20" y2="20" />
-  </svg>
-);
-
-const FileIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-    <polyline points="14 2 14 8 20 8" />
-  </svg>
-);
-
-const CopyIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-  </svg>
-);
-
-const CheckIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-
-const CloseIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-
-const UploadIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-    <polyline points="17 8 12 3 7 8" />
-    <line x1="12" y1="3" x2="12" y2="15" />
-  </svg>
-);
-
-const InfoIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10" />
-    <line x1="12" y1="16" x2="12" y2="12" />
-    <line x1="12" y1="8" x2="12.01" y2="8" />
-  </svg>
-);
-
-const TABS = [
-  { id: "desk", label: "Defense Desk", icon: "⚖️" },
-  { id: "chat", label: "Cross-Examination", icon: "💬" },
-  { id: "compare", label: "Evidence Comparison", icon: "🔍" },
-  { id: "risk", label: "Risk Radar", icon: "🛡️" },
-  { id: "compliance", label: "Verdict Verification", icon: "✅" },
-  { id: "clauses", label: "Precedent Library", icon: "📖" },
-  { id: "deadlines", label: "Statute Clock", icon: "📅" },
-  { id: "prompts", label: "Court Directives", icon: "🛠️" },
-  { id: "analytics", label: "Trial Analytics", icon: "📊" },
-  { id: "search", label: "Evidence Vault", icon: "📂" },
-];
+import { sanitizeHtml } from "@/lib/sanitize";
+import { TASKS, DOCTYPES, LOADING_STEPS, TABS, NAV_GROUPS } from "@/lib/constants";
+import { AttorneyBadgeIcon, ScalesIcon, FileIcon, CopyIcon, CheckIcon, CloseIcon, UploadIcon, InfoIcon } from "@/components/Icons";
 
 export default function HomePage() {
   const [text, setText] = useState("");
@@ -140,13 +42,17 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState("desk");
   const [activeDocument, setActiveDocument] = useState(null);
   const [jurisdiction, setJurisdiction] = useState("US Federal");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     fetch("/api/model")
       .then((r) => r.json())
       .then((data) => setModel(data.model))
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Failed to fetch model info:", err);
+        setModel("Unknown (API unavailable)");
+      });
   }, []);
 
   useEffect(() => {
@@ -300,8 +206,8 @@ export default function HomePage() {
             <div className="dashboard-grid">
               <form id="case-file" className="panel editor-panel" onSubmit={handleSubmit}>
                 <div className="panel-heading">
-                  <span className="panel-number">EXHIBIT A</span>
-                  <h2 className="panel-title">COURT EVIDENCE DOSSIER</h2>
+                  <span className="panel-number">INPUT</span>
+                  <h2 className="panel-title">Document Input</h2>
                 </div>
 
                 <div className="tab-bar">
@@ -360,234 +266,216 @@ export default function HomePage() {
                             <span className="file-size">({(file.size / 1024).toFixed(1)} KB)</span>
                           </div>
                           <button
-                            type="button"
-                            className="remove-file-btn"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setFile(null);
-                            }}
-                          >
-                            <CloseIcon className="remove-icon" />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <UploadIcon className="dropzone-icon" />
-                          <div className="dropzone-text">
-                            <span className="highlight">Present evidence</span> or drag & drop
-                          </div>
-                          <span className="dropzone-sub">PDF or Plain Text (up to 10MB)</span>
-                        </>
-                      )}
-                    </label>
-                  </div>
-                )}
-
-                <div className="meta-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px" }}>
-                  <div className="field-row">
-                    <label className="field-label">Evidence Type</label>
-                    <CustomSelect
-                      options={DOCTYPES}
-                      value={docType}
-                      onChange={(e) => setDocType(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="field-row">
-                    <label className="field-label">Governing Jurisdiction</label>
-                    <JurisdictionSelector
-                      value={jurisdiction}
-                      onChange={setJurisdiction}
-                    />
-                  </div>
-
-                  <div className="field-row">
-                    <label className="field-label">Preset Task</label>
-                    <CustomSelect
-                      options={[
-                        ...TASKS.map((t) => ({ value: t, label: t })),
-                        { value: "custom", label: "Custom Directive" }
-                      ]}
-                      value={TASKS.includes(task) ? task : "custom"}
-                      onChange={(e) => {
-                        if (e.target.value !== "custom") {
-                          setTask(e.target.value);
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="field-group" style={{ marginTop: "15px" }}>
-                  <label className="field-label">Analysis Directive (Prompt)</label>
-                  <textarea
-                    className="editor-textarea"
-                    style={{ minHeight: "80px" }}
-                    value={task}
-                    onChange={(e) => setTask(e.target.value)}
-                    placeholder="Specify what the AI should analyze or ask..."
-                  />
-                </div>
-
-                <div className="btn-group">
-                  <button type="submit" className="run-btn" disabled={loading}>
-                    {loading ? (
-                      <span className="loading-spinner-btn">PRESSING THE RECORD...</span>
-                    ) : (
-                      "CROSS-EXAMINE EVIDENCE"
-                    )}
-                  </button>
-                  <button type="button" className="clear-btn" onClick={handleClear} disabled={loading}>
-                    CLEAR RECORD
-                  </button>
-                </div>
-
-                {error && (
-                  <div className="alert error">
-                    <InfoIcon className="alert-icon" />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                {saveStatus && (
-                  <div className="alert success">
-                    <CheckIcon className="alert-icon" />
-                    <span>{saveStatus}</span>
-                  </div>
-                )}
-              </form>
-
-              <section id="testimony" className="panel viewer-panel" style={{ border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
-                <div className="viewer-header">
-                  <h2 className="viewer-title" style={{ fontFamily: "var(--font-header)", letterSpacing: "0.5px" }}>
-                    <ScalesIcon className="panel-title-icon" style={{ color: "var(--gold)" }} />
-                    OFFICIAL COURT BRIEF & RECORD
-                  </h2>
-                  {response && !loading && (
-                    <div className="viewer-actions" style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                      <button
-                        className="record-primary-btn"
-                        onClick={() => exportToPDF(activeDocument?.title || "Official Court Brief", marked.parse(response))}
-                        style={{ minHeight: "36px", padding: "4px 12px", fontSize: "0.88rem" }}
-                      >
-                        📄 EXPORT PDF DOCKET
-                      </button>
-                      <button
-                        onClick={() => handleAskFollowUp(activeDocument || { title: activeDocument?.title || "Current Case Brief", originalText: text })}
-                        className="record-primary-btn"
-                        style={{ minHeight: "36px", padding: "4px 14px", fontSize: "0.88rem" }}
-                      >
-                        💬 FOLLOW-UP INTERROGATION
-                      </button>
-                      <button
-                        className={`action-icon-btn ${copied ? "success" : ""}`}
-                        onClick={handleCopy}
-                        title={copied ? "Copied" : "Copy to Clipboard"}
-                        style={{ border: "2px solid #000", boxShadow: "2px 2px 0 #000" }}
-                      >
-                        {copied ? <CheckIcon className="action-icon" /> : <CopyIcon className="action-icon" />}
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="viewer-scroll-container">
-                  {loading ? (
-                    <div className="skeleton-loader">
-                      <div className="skeleton-line h"></div>
-                      <div className="skeleton-line p1"></div>
-                      <div className="skeleton-line p2"></div>
-                      <div className="skeleton-line p3"></div>
-                      <div className="skeleton-line p1"></div>
-                      <div className="skeleton-line p2"></div>
-                      <div className="skeleton-line p4"></div>
-                      <div className="loading-step-text" style={{ fontFamily: "var(--font-action)", fontSize: "1.2rem", color: "var(--gold)", letterSpacing: "1px" }}>
-                        {LOADING_STEPS[loadingStep]}
-                      </div>
-                    </div>
-                  ) : response ? (
-                    <>
-                      <div style={{
-                        margin: "0 0 16px 0",
-                        padding: "10px 16px",
-                        background: "rgba(224, 27, 36, 0.14)",
-                        border: "1.5px solid var(--prosecution-red)",
-                        boxShadow: "3px 3px 0 #000000",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                        borderRadius: "2px"
-                      }}>
-                        <span style={{ fontSize: "1.3rem" }}>⚠️</span>
-                        <div style={{ fontSize: "0.85rem", color: "var(--paper)", lineHeight: "1.4" }}>
-                          <strong style={{ color: "#ff667a", fontFamily: "var(--font-action)", letterSpacing: "0.5px" }}>COURT AI ADVISORY:</strong>{" "}
-                          This response is generated by artificial intelligence, which can make mistakes and errors. Do not take AI responses 100% for granted—use them for reference only and verify critical details with qualified legal counsel.
-                        </div>
-                      </div>
-                      <div
-                        className="markdown-content"
-                        dangerouslySetInnerHTML={{ __html: marked.parse(response) }}
-                      />
-                      <div style={{
-                        marginTop: "24px",
-                        padding: "16px 20px",
-                        background: "linear-gradient(135deg, rgba(29, 112, 245, 0.2), #070b15)",
-                        border: "2px solid var(--defense-blue)",
-                        boxShadow: "4px 4px 0 #000000",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                        gap: "12px"
-                      }}>
-                        <div>
-                          <div style={{ fontFamily: "var(--font-action)", fontSize: "1.25rem", color: "var(--gold)", letterSpacing: "0.8px" }}>
-                            💬 HAVE FOLLOW-UP QUESTIONS ABOUT THIS CASE?
-                          </div>
-                          <div style={{ fontSize: "0.88rem", color: "var(--muted)", marginTop: "2px" }}>
-                            Interrogate AI co-counsel further on specific clauses, liabilities, or defense strategies.
-                          </div>
-                        </div>
-                        <button
-                          className="run-btn"
-                          onClick={() => handleAskFollowUp(activeDocument || { title: activeDocument?.title || "Current Case Brief", originalText: text })}
-                          style={{ minHeight: "42px", padding: "8px 20px", fontSize: "1.05rem" }}
-                        >
-                          ASK FOLLOW-UP QUESTION
-                        </button>
-                      </div>
-
-                      <div style={{ marginTop: "24px" }}>
-                        <PlainEnglishTranslator documentText={response || text} />
-                      </div>
-                    </>
-                  ) : (
-                    <div className="empty-state" style={{ border: "2px dashed var(--gold)", minHeight: "380px" }}>
-                      <ScalesIcon className="empty-state-icon" style={{ color: "var(--gold)", width: "64px", height: "64px" }} />
-                      <div className="empty-state-title" style={{ fontFamily: "var(--font-action)", fontSize: "1.5rem", letterSpacing: "1px", color: "var(--paper)" }}>
-                        THE JUDGE'S BENCH IS WAITING.
-                      </div>
-                      <p className="empty-state-desc" style={{ color: "var(--muted)", fontSize: "0.95rem" }}>
-                        Present witness testimony or evidence files to generate an unassailable legal brief.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </section>
-            </div>
-
-            <section id="record" className="history-shell" style={{ marginTop: "30px" }}>
-              <DocumentHistory onDocumentSelect={handleDocumentSelect} onInterrogate={handleAskFollowUp} />
-            </section>
-          </>
-        );
+                             type="button"
+                             className="remove-file-btn"
+                             onClick={(e) => {
+                               e.preventDefault();
+                               e.stopPropagation();
+                               setFile(null);
+                             }}
+                           >
+                             <CloseIcon className="remove-icon" />
+                           </button>
+                         </>
+                       ) : (
+                         <>
+                           <UploadIcon className="dropzone-icon" />
+                           <div className="dropzone-text">
+                             <span className="highlight">Present evidence</span> or drag & drop
+                           </div>
+                           <span className="dropzone-sub">PDF or Plain Text (up to 10MB)</span>
+                         </>
+                       )}
+                     </label>
+                   </div>
+                 )}
+ 
+                 <div className="meta-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px" }}>
+                   <div className="field-row">
+                     <label className="field-label">Evidence Type</label>
+                     <CustomSelect
+                       options={DOCTYPES}
+                       value={docType}
+                       onChange={(e) => setDocType(e.target.value)}
+                     />
+                   </div>
+ 
+                   <div className="field-row">
+                     <label className="field-label">Governing Jurisdiction</label>
+                     <JurisdictionSelector
+                       value={jurisdiction}
+                       onChange={setJurisdiction}
+                     />
+                   </div>
+ 
+                   <div className="field-row">
+                     <label className="field-label">Preset Task</label>
+                     <CustomSelect
+                       options={[
+                         ...TASKS.map((t) => ({ value: t, label: t })),
+                         { value: "custom", label: "Custom Directive" }
+                       ]}
+                       value={TASKS.includes(task) ? task : "custom"}
+                       onChange={(e) => {
+                         if (e.target.value !== "custom") {
+                           setTask(e.target.value);
+                         }
+                       }}
+                     />
+                   </div>
+                 </div>
+ 
+                 <div className="field-group" style={{ marginTop: "15px" }}>
+                   <label className="field-label">Analysis Directive (Prompt)</label>
+                   <textarea
+                     className="editor-textarea"
+                     style={{ minHeight: "80px" }}
+                     value={task}
+                     onChange={(e) => setTask(e.target.value)}
+                     placeholder="Specify what the AI should analyze or ask..."
+                   />
+                 </div>
+ 
+                 <div className="btn-group">
+                   <button type="submit" className="run-btn" disabled={loading}>
+                     {loading ? (
+                       <span className="loading-spinner-btn">Analyzing...</span>
+                     ) : (
+                       "Run Analysis"
+                     )}
+                   </button>
+                   <button type="button" className="clear-btn" onClick={handleClear} disabled={loading}>
+                     Clear
+                   </button>
+                 </div>
+ 
+                 {error && (
+                   <div className="alert error">
+                     <InfoIcon className="alert-icon" />
+                     <span>{error}</span>
+                   </div>
+                 )}
+ 
+                 {saveStatus && (
+                   <div className="alert success">
+                     <CheckIcon className="alert-icon" />
+                     <span>{saveStatus}</span>
+                   </div>
+                 )}
+               </form>
+ 
+               <section id="testimony" className="panel viewer-panel">
+                 <div className="viewer-header">
+                   <h2 className="viewer-title">
+                     <ScalesIcon className="panel-title-icon" />
+                     Analysis Results
+                   </h2>
+                   {response && !loading && (
+                     <div className="viewer-actions">
+                       <button
+                         className="record-primary-btn"
+                         onClick={() => exportToPDF(activeDocument?.title || "Official Court Brief", marked.parse(response))}
+                       >
+                         📄 Export PDF
+                       </button>
+                       <button
+                         onClick={() => handleAskFollowUp(activeDocument || { title: activeDocument?.title || "Current Case Brief", originalText: text })}
+                         className="record-primary-btn"
+                       >
+                         💬 Follow-up Chat
+                       </button>
+                       <button
+                         className={`action-icon-btn ${copied ? "success" : ""}`}
+                         onClick={handleCopy}
+                         title={copied ? "Copied" : "Copy to Clipboard"}
+                       >
+                         {copied ? <CheckIcon className="action-icon" /> : <CopyIcon className="action-icon" />}
+                       </button>
+                     </div>
+                   )}
+                 </div>
+ 
+                 <div className="viewer-scroll-container">
+                   {loading ? (
+                     <div className="skeleton-loader">
+                       <div className="skeleton-line h"></div>
+                       <div className="skeleton-line p1"></div>
+                       <div className="skeleton-line p2"></div>
+                       <div className="skeleton-line p3"></div>
+                       <div className="skeleton-line p1"></div>
+                       <div className="skeleton-line p2"></div>
+                       <div className="skeleton-line p4"></div>
+                       <div className="loading-step-text">
+                         {LOADING_STEPS[loadingStep]}
+                       </div>
+                     </div>
+                   ) : response ? (
+                     <>
+                       <div className="alert" style={{ marginBottom: '16px' }}>
+                         <span>ℹ️</span>
+                         <span><strong>AI Disclaimer:</strong> This response is AI-generated for reference only. Verify critical details with qualified legal counsel.</span>
+                       </div>
+                       <div
+                         className="markdown-content"
+                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(marked.parse(response)) }}
+                       />
+                       <div style={{
+                         marginTop: "24px",
+                         padding: "16px 20px",
+                         border: "1px solid var(--border)",
+                         borderRadius: "6px",
+                         display: "flex",
+                         justifyContent: "space-between",
+                         alignItems: "center",
+                         flexWrap: "wrap",
+                         gap: "12px"
+                       }}>
+                         <div>
+                           <div style={{ fontWeight: 600, fontSize: "1.1rem" }}>
+                             💬 Follow-up Questions
+                           </div>
+                           <div style={{ fontSize: "0.88rem", color: "var(--muted)", marginTop: "2px" }}>
+                             Ask AI co-counsel further on specific clauses, liabilities, or strategies.
+                           </div>
+                         </div>
+                         <button
+                           className="run-btn"
+                           onClick={() => handleAskFollowUp(activeDocument || { title: activeDocument?.title || "Current Case Brief", originalText: text })}
+                         >
+                           Ask Follow-up
+                         </button>
+                       </div>
+ 
+                       <div style={{ marginTop: "24px" }}>
+                         <PlainEnglishTranslator documentText={response || text} />
+                       </div>
+                     </>
+                   ) : (
+                     <div className="empty-state">
+                       <ScalesIcon className="empty-state-icon" />
+                       <div className="empty-state-title">
+                         Ready for Analysis
+                       </div>
+                       <p className="empty-state-desc">
+                         Upload or paste a document to get started.
+                       </p>
+                     </div>
+                   )}
+                 </div>
+               </section>
+             </div>
+ 
+             <section id="record" className="history-shell" style={{ marginTop: "30px" }}>
+               <DocumentHistory onDocumentSelect={handleDocumentSelect} onInterrogate={handleAskFollowUp} />
+             </section>
+           </>
+         );
       case "chat":
         return (
-          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
-            <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">WITNESS STAND</span>
-              <h2 className="panel-title">CROSS-EXAMINATION & WITNESS INTERROGATION CHAMBER</h2>
+          <div className="panel">
+            <div className="panel-heading">
+              <span className="panel-number">CHAT</span>
+              <h2 className="panel-title">AI Chat</h2>
             </div>
             <ChatInterface
               documentText={text}
@@ -598,46 +486,46 @@ export default function HomePage() {
         );
       case "compare":
         return (
-          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
-            <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">EVIDENCE DIFF</span>
-              <h2 className="panel-title">EXHIBIT A vs EXHIBIT B COMPARISON BENCH</h2>
+          <div className="panel">
+            <div className="panel-heading">
+              <span className="panel-number">COMPARE</span>
+              <h2 className="panel-title">Document Comparison</h2>
             </div>
             <DocumentComparison />
-            <div style={{ marginTop: "30px", borderTop: "2px dashed var(--gold)", paddingTop: "24px" }}>
+            <div style={{ marginTop: "30px" }}>
               <BatchAnalyzer onDocumentSelect={handleDocumentSelect} />
             </div>
           </div>
         );
       case "risk":
         return (
-          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
-            <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">THREAT SCORE</span>
-              <h2 className="panel-title">PROSECUTION THREAT RADAR & RISK SCORE</h2>
+          <div className="panel">
+            <div className="panel-heading">
+              <span className="panel-number">RISK</span>
+              <h2 className="panel-title">Risk Assessment</h2>
             </div>
             <ContradictionDetector documentText={text} jurisdiction={jurisdiction} />
-            <div style={{ marginTop: "24px", borderTop: "2px dashed var(--gold)", paddingTop: "24px" }}>
+            <div style={{ marginTop: "24px" }}>
               <RiskAnalyzer documentText={text} />
             </div>
           </div>
         );
       case "compliance":
         return (
-          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
-            <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">STATUTE CHECK</span>
-              <h2 className="panel-title">VERDICT & STATUTORY COMPLIANCE CHECK</h2>
+          <div className="panel">
+            <div className="panel-heading">
+              <span className="panel-number">COMPLIANCE</span>
+              <h2 className="panel-title">Compliance Analysis</h2>
             </div>
             <ComplianceChecker documentText={text} />
           </div>
         );
       case "clauses":
         return (
-          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
-            <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">PRECEDENTS</span>
-              <h2 className="panel-title">PRECEDENT ARCHIVE & CLAUSE BANK</h2>
+          <div className="panel">
+            <div className="panel-heading">
+              <span className="panel-number">LIBRARY</span>
+              <h2 className="panel-title">Clause Library & Redliner</h2>
             </div>
             <ClauseRedliner
               jurisdiction={jurisdiction}
@@ -647,7 +535,7 @@ export default function HomePage() {
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             />
-            <div style={{ marginTop: "24px", borderTop: "2px dashed var(--gold)", paddingTop: "24px" }}>
+            <div style={{ marginTop: "24px" }}>
               <ClauseLibrary
                 onInsert={(clauseText) => {
                   setText((prev) => (prev ? prev + "\n\n" + clauseText : clauseText));
@@ -660,20 +548,20 @@ export default function HomePage() {
         );
       case "deadlines":
         return (
-          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
-            <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">COUNTDOWN</span>
-              <h2 className="panel-title">STATUTE OF LIMITATIONS & DEADLINE CLOCK</h2>
+          <div className="panel">
+            <div className="panel-heading">
+              <span className="panel-number">DEADLINES</span>
+              <h2 className="panel-title">Deadline Tracker</h2>
             </div>
             <DeadlineTracker />
           </div>
         );
       case "prompts":
         return (
-          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
-            <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">STRATEGY</span>
-              <h2 className="panel-title">DEFENSE DIRECTIVES & STRATEGY PROMPTS</h2>
+          <div className="panel">
+            <div className="panel-heading">
+              <span className="panel-number">PROMPTS</span>
+              <h2 className="panel-title">Custom Prompts</h2>
             </div>
             <CustomPromptManager
               onSelectPrompt={(promptText) => {
@@ -686,20 +574,20 @@ export default function HomePage() {
         );
       case "analytics":
         return (
-          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
-            <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">METRICS</span>
-              <h2 className="panel-title">TRIAL & EVIDENCE RECORD ANALYTICS</h2>
+          <div className="panel">
+            <div className="panel-heading">
+              <span className="panel-number">ANALYTICS</span>
+              <h2 className="panel-title">Analytics Dashboard</h2>
             </div>
             <AnalyticsDashboard />
           </div>
         );
       case "search":
         return (
-          <div className="panel" style={{ padding: "24px", border: "3px solid var(--gold)", boxShadow: "6px 6px 0 #000000" }}>
-            <div className="panel-heading" style={{ marginBottom: "20px" }}>
-              <span className="panel-number">VAULT ARCHIVE</span>
-              <h2 className="panel-title">OFFICIAL EVIDENCE VAULT & SEARCH</h2>
+          <div className="panel">
+            <div className="panel-heading">
+              <span className="panel-number">SEARCH</span>
+              <h2 className="panel-title">Search & Records</h2>
             </div>
             <SearchBar
               onDocumentSelect={handleDocumentSelect}
@@ -715,143 +603,74 @@ export default function HomePage() {
   };
 
   return (
-    <>
-      <header className="app-header">
-        <div className="header-brand">
-          <AttorneyBadgeIcon className="header-logo-icon" style={{ width: "32px", height: "32px", filter: "drop-shadow(0 0 6px rgba(255, 203, 61, 0.6))" }} />
-          <ScalesIcon className="header-logo-icon" />
-          <span className="header-logo-text" style={{ fontFamily: "var(--font-header)", letterSpacing: "1px" }}>StatuteSense</span>
-          <span className="court-session-chip" style={{
-            padding: "3px 8px",
-            fontSize: "0.7rem",
-            fontFamily: "var(--font-action)",
-            letterSpacing: "1px",
-            background: "linear-gradient(135deg, var(--prosecution-red), var(--prosecution-red-dark))",
-            color: "#ffffff",
-            border: "1px solid var(--gold)",
-            boxShadow: "2px 2px 0 #000000",
-            textTransform: "uppercase",
-            marginLeft: "6px"
-          }}>
-            SESSION ACTIVE
-          </span>
-        </div>
-        <div className="user-block" style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <button
-            onClick={toggleTheme}
-            className="clear-btn"
-            style={{
-              padding: "6px 12px",
-              minHeight: "34px",
-              fontSize: "0.85rem",
-              background: "transparent",
-              border: "1px solid var(--line)",
-              color: "var(--muted)",
-              cursor: "pointer",
-            }}
-          >
-            {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
+    <div className="app-layout">
+      {/* Sidebar */}
+      <aside className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-header">
+          <ScalesIcon style={{ width: 24, height: 24, color: 'var(--accent)' }} />
+          <span className="sidebar-logo">StatuteSense</span>
+          <button className="sidebar-toggle" onClick={() => setSidebarCollapsed(!sidebarCollapsed)} title={sidebarCollapsed ? 'Expand' : 'Collapse'}>
+            {sidebarCollapsed ? '→' : '←'}
           </button>
-          <div className="user-info">
-            <span className="user-label">AI Counsel Engine</span>
-            <span className="user-name">{model || "Loading..."}</span>
-          </div>
         </div>
-      </header>
-
-      <main className="dashboard-container">
-        <section className="court-hero-strip" style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "16px",
-          padding: "16px 22px",
-          marginBottom: "20px",
-          background: "linear-gradient(135deg, rgba(29, 112, 245, 0.18) 0%, #0c1324 50%, rgba(224, 27, 36, 0.18) 100%)",
-          border: "2px solid var(--gold)",
-          boxShadow: "4px 4px 0 #000000",
-        }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <span className="court-evidence-stamp" style={{ margin: 0, padding: "2px 8px", fontSize: "0.75rem" }}>COURT DOSSIER</span>
-              <h1 id="case-title" style={{ fontFamily: "var(--font-header)", fontSize: "1.35rem", color: "var(--paper)", letterSpacing: "0.5px", margin: 0, textShadow: "2px 2px 0 #000" }}>
-                BUILD THE DEFENSE BEFORE THE GAVEL FALLS
-              </h1>
+        <nav className="sidebar-nav">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label} className="sidebar-group">
+              <span className="sidebar-group-label">{group.label}</span>
+              {group.items.map((item) => (
+                <button
+                  key={item.id}
+                  className={`sidebar-item ${activeTab === item.id ? 'active' : ''}`}
+                  onClick={() => setActiveTab(item.id)}
+                >
+                  <span className="sidebar-item-icon">{item.icon}</span>
+                  <span>{item.label}</span>
+                </button>
+              ))}
             </div>
-            <p style={{ fontSize: "0.88rem", color: "var(--muted)", marginTop: "4px", margin: 0 }}>
-              Cross-examine evidence, analyze critical clauses, and expose high-risk traps.
-            </p>
-          </div>
-
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            padding: "8px 16px",
-            background: "#060a14",
-            border: "1.5px solid var(--gold)",
-            boxShadow: "2px 2px 0 #000"
-          }}>
-            <span style={{ fontFamily: "var(--font-action)", fontSize: "0.95rem", color: "var(--gold)", letterSpacing: "0.8px" }}>READINESS:</span>
-            <span style={{ fontFamily: "var(--font-action)", fontSize: "1.05rem", color: activeDocument ? "var(--green)" : "var(--gold)", letterSpacing: "1px" }}>
-              {activeDocument ? "ARMED FOR COURT" : "STANDBY AT DESK"}
-            </span>
-          </div>
-        </section>
-
-        {activeDocument && (
-          <div className="active-doc-banner" style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "10px 18px",
-            background: "linear-gradient(90deg, rgba(244, 192, 79, 0.12), rgba(244, 192, 79, 0.03))",
-            border: "1px solid var(--gold)",
-            marginBottom: "18px",
-            boxShadow: "2px 2px 0 #000"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-              <span style={{ color: "var(--gold)", fontWeight: "bold", fontSize: "0.9rem" }}>⚖️ Active Record:</span>
-              <strong style={{ color: "var(--text)", fontSize: "0.95rem" }}>{activeDocument.title}</strong>
-              <span style={{ fontSize: "0.82rem", color: "var(--muted)" }}>({activeDocument.documentType})</span>
-            </div>
-            <button
-              onClick={() => {
-                setActiveDocument(null);
-                setText("");
-                setResponse("");
-              }}
-              className="record-clear-btn"
-              style={{ padding: "4px 12px", fontSize: "0.8rem", minHeight: "30px" }}
-            >
-              Unload
-            </button>
-          </div>
-        )}
-
-        <nav className="tab-bar-clean" style={{ marginBottom: "24px" }}>
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              className={`tab-btn-clean ${activeTab === tab.id ? "active" : ""}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <span style={{ fontSize: "1rem" }}>{tab.icon}</span>
-              <span>{tab.label}</span>
-            </button>
           ))}
         </nav>
+        <div className="sidebar-footer">
+          <button onClick={toggleTheme} className="sidebar-item" style={{ justifyContent: 'center' }}>
+            {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+          </button>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', textAlign: 'center', padding: '4px' }}>
+            {model || 'Loading...'}
+          </div>
+        </div>
+      </aside>
 
-        {renderTabContent()}
+      {/* Main Content */}
+      <main className="main-content">
+        <header className="app-header">
+          <div>
+            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.2rem', fontWeight: 700 }}>
+              {NAV_GROUPS.flatMap(g => g.items).find(t => t.id === activeTab)?.label || 'Document Analysis'}
+            </h1>
+            {activeDocument && (
+              <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                Active: {activeDocument.title}
+              </span>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {activeDocument && (
+              <button onClick={() => { setActiveDocument(null); setText(''); setResponse(''); }} className="clear-btn" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
+                Clear Document
+              </button>
+            )}
+          </div>
+        </header>
 
-        <footer className="dashboard-footer">
-          <p>
-            Disclaimer: AI-generated analysis is not 100% accurate. Results are for shallow reference purposes only and do not constitute formal legal advice. Please consult with a qualified legal professional to verify critical details.
-          </p>
-        </footer>
+        <div className="dashboard-container">
+          <div className="tab-content-wrapper" key={activeTab}>
+            {renderTabContent()}
+          </div>
+          <footer className="dashboard-footer">
+            <p>AI-generated analysis is for reference purposes only and does not constitute formal legal advice.</p>
+          </footer>
+        </div>
       </main>
-    </>
+    </div>
   );
 }

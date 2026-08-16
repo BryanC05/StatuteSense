@@ -4,7 +4,6 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "env": {
-    "DATABASE_URL": "file:./dev.db",
     "NODE_ENV": "production"
   },
   "outputDirectory": ".next"

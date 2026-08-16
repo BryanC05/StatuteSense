@@ -49,8 +49,8 @@ export default function DocumentComparison() {
       </div>
 
       <div className="compare-container">
-        <div className="compare-pane" style={{ border: "2px solid var(--defense-blue)", boxShadow: "3px 3px 0 #000000", padding: "12px", background: "var(--panel)" }}>
-          <div style={{ marginBottom: "8px" }}>
+        <div className="compare-pane">
+          <div>
             <span className="court-speaker-badge badge-defense">EXHIBIT A: DEFENSE EVIDENCE</span>
           </div>
           <input
@@ -59,18 +59,16 @@ export default function DocumentComparison() {
             onChange={(e) => setDoc1({ ...doc1, title: e.target.value })}
             placeholder="Document 1 title"
             className="record-search"
-            style={{ marginBottom: "10px" }}
           />
           <textarea
-            value={doc1.text}
-            onChange={(e) => setDoc1({ ...doc1, text: e.target.value })}
+            defaultValue={doc1.text}
+            onBlur={(e) => setDoc1({ ...doc1, text: e.target.value })}
             placeholder="Paste first document text here..."
             className="editor-textarea"
-            style={{ minHeight: "220px" }}
           />
         </div>
-        <div className="compare-pane" style={{ border: "2px solid var(--prosecution-red)", boxShadow: "3px 3px 0 #000000", padding: "12px", background: "var(--panel)" }}>
-          <div style={{ marginBottom: "8px" }}>
+        <div className="compare-pane">
+          <div>
             <span className="court-speaker-badge badge-prosecution">EXHIBIT B: PROSECUTION EVIDENCE</span>
           </div>
           <input
@@ -79,23 +77,21 @@ export default function DocumentComparison() {
             onChange={(e) => setDoc2({ ...doc2, title: e.target.value })}
             placeholder="Document 2 title"
             className="record-search"
-            style={{ marginBottom: "10px" }}
           />
           <textarea
-            value={doc2.text}
-            onChange={(e) => setDoc2({ ...doc2, text: e.target.value })}
+            defaultValue={doc2.text}
+            onBlur={(e) => setDoc2({ ...doc2, text: e.target.value })}
             placeholder="Paste second document text here..."
             className="editor-textarea"
-            style={{ minHeight: "220px" }}
           />
         </div>
       </div>
 
       {result && (
         <div className="compare-results">
-          <div style={{ padding: "16px", background: "var(--panel-2)", border: "2px solid var(--line)", marginBottom: "16px" }}>
-            <strong style={{ color: "var(--paper)" }}>Summary:</strong>
-            <span style={{ color: "var(--muted)", marginLeft: "8px" }}>{result.summary}</span>
+          <div className="compare-pane">
+            <strong>Summary:</strong>
+            <span className="record-muted"> {result.summary}</span>
           </div>
 
           {result.added && result.added.length > 0 && (
@@ -104,7 +100,7 @@ export default function DocumentComparison() {
               {result.added.map((item, idx) => (
                 <div key={idx} className="compare-item compare-item-added">
                   <strong>{item.title}</strong>
-                  <p style={{ color: "var(--muted)", fontSize: "0.9rem", marginTop: "4px" }}>{item.text}</p>
+                  <p className="record-meta">{item.text}</p>
                   <span className="badge badge-modified">{item.impact} impact</span>
                 </div>
               ))}
@@ -117,7 +113,7 @@ export default function DocumentComparison() {
               {result.removed.map((item, idx) => (
                 <div key={idx} className="compare-item compare-item-removed">
                   <strong>{item.title}</strong>
-                  <p style={{ color: "var(--muted)", fontSize: "0.9rem", marginTop: "4px" }}>{item.text}</p>
+                  <p className="record-meta">{item.text}</p>
                   <span className="badge badge-modified">{item.impact} impact</span>
                 </div>
               ))}
@@ -130,17 +126,17 @@ export default function DocumentComparison() {
               {result.modified.map((item, idx) => (
                 <div key={idx} className="compare-item compare-item-modified">
                   <strong>{item.title}</strong>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "8px" }}>
+                  <div className="compare-container">
                     <div>
-                      <div style={{ color: "var(--red)", fontSize: "0.8rem", fontWeight: 700 }}>Original:</div>
-                      <p style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{item.original}</p>
+                      <div className="field-label">Original:</div>
+                      <p className="record-meta">{item.original}</p>
                     </div>
                     <div>
-                      <div style={{ color: "var(--green)", fontSize: "0.8rem", fontWeight: 700 }}>Revised:</div>
-                      <p style={{ color: "var(--muted)", fontSize: "0.85rem" }}>{item.revised}</p>
+                      <div className="field-label">Revised:</div>
+                      <p className="record-meta">{item.revised}</p>
                     </div>
                   </div>
-                  <span className="badge badge-modified" style={{ marginTop: "8px" }}>{item.impact} impact</span>
+                  <span className="badge badge-modified">{item.impact} impact</span>
                 </div>
               ))}
             </div>

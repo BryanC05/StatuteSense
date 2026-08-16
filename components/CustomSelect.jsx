@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useId } from "react";
 
 export default function CustomSelect({
   options = [],
@@ -19,7 +19,7 @@ export default function CustomSelect({
   const containerRef = useRef(null);
 
   // Normalize options to array of { value, label }
-  const normalizedOptions = options.map((opt) => {
+  const normalizedOptions = useMemo(() => options.map((opt) => {
     if (typeof opt === "object" && opt !== null) {
       return {
         value: opt.value ?? opt.id,
@@ -27,7 +27,8 @@ export default function CustomSelect({
       };
     }
     return { value: opt, label: String(opt) };
-  });
+  }), [options]);
+  const dropdownId = useId();
 
   const selectedOption =
     normalizedOptions.find((opt) => String(opt.value) === String(value)) || null;
@@ -108,10 +109,11 @@ export default function CustomSelect({
         onKeyDown={handleKeyDown}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
+        aria-controls={isOpen ? dropdownId : undefined}
+        aria-activedescendant={isOpen && focusedIndex >= 0 ? `${dropdownId}-opt-${focusedIndex}` : undefined}
         disabled={disabled}
       >
         <span className="custom-select-label">
-          <span style={{ color: "var(--gold)", fontSize: "0.85rem", opacity: 0.9, flexShrink: 0 }}>⚖️</span>
           <span className="custom-select-text">{selectedOption ? selectedOption.label : placeholder}</span>
         </span>
         <span className="custom-select-arrow">
@@ -129,13 +131,14 @@ export default function CustomSelect({
       </button>
 
       {isOpen && (
-        <div className="custom-select-dropdown" role="listbox">
+        <div id={dropdownId} className="custom-select-dropdown" role="listbox">
           {normalizedOptions.map((opt, index) => {
             const isSelected = String(opt.value) === String(value);
             const isFocused = index === focusedIndex;
             return (
               <div
                 key={String(opt.value) + index}
+                id={`${dropdownId}-opt-${index}`}
                 role="option"
                 aria-selected={isSelected}
                 className={`custom-select-option ${isSelected ? "selected" : ""} ${

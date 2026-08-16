@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { marked } from "marked";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 export default function PlainEnglishTranslator({ documentText }) {
   const [loading, setLoading] = useState(false);
@@ -38,40 +39,37 @@ export default function PlainEnglishTranslator({ documentText }) {
   };
 
   return (
-    <div style={{ padding: "8px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "12px" }}>
+    <div>
+      <div className="record-header">
         <div>
-          <h3 style={{ fontFamily: "var(--font-action)", color: "var(--gold)", fontSize: "1.3rem", letterSpacing: "1px", margin: 0 }}>
-            🏛️ JURY-FRIENDLY PLAIN ENGLISH TRANSLATOR
-          </h3>
-          <p style={{ fontSize: "0.85rem", color: "var(--muted)", margin: "4px 0 0 0" }}>
-            Translates dense legalese into clear, 8th-grade level executive summaries for non-lawyers.
+          <h3 className="record-title">Plain English Translation</h3>
+          <p className="record-meta" style={{ marginTop: "4px" }}>
+            Translates dense legalese into clear, plain English summaries.
           </p>
         </div>
         <button
           className="run-btn"
           onClick={handleTranslate}
           disabled={loading || !documentText?.trim()}
-          style={{ minHeight: "44px", padding: "8px 24px" }}
         >
-          {loading ? "TRANSLATING LEGALESE..." : "TRANSLATE TO PLAIN ENGLISH"}
+          {loading ? "Translating..." : "Translate to Plain English"}
         </button>
       </div>
 
       {error && (
-        <div style={{ padding: "10px 14px", background: "rgba(224, 27, 36, 0.2)", border: "1.5px solid var(--prosecution-red)", color: "var(--paper)", marginBottom: "16px" }}>
+        <div style={{ padding: "10px 14px", background: "rgba(224, 27, 36, 0.2)", border: "1px solid var(--red)", color: "var(--paper)", marginBottom: "16px" }}>
           ⚠️ {error}
         </div>
       )}
 
       {translation && (
-        <div style={{ padding: "20px", background: "rgba(10, 15, 26, 0.9)", border: "2px solid var(--gold)", boxShadow: "4px 4px 0 #000" }}>
-          <div style={{ fontFamily: "var(--font-action)", color: "var(--gold)", fontSize: "1.1rem", marginBottom: "12px", letterSpacing: "0.5px" }}>
-            📖 JURY & EXECUTIVE SUMMARY
+        <div style={{ padding: "20px", background: "var(--panel-2)", border: "1px solid var(--line)" }}>
+          <div style={{ color: "var(--gold)", fontSize: "1rem", fontWeight: 700, marginBottom: "12px" }}>
+            Plain English Summary
           </div>
           <div
             className="markdown-content"
-            dangerouslySetInnerHTML={{ __html: marked.parse(translation) }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(marked.parse(translation)) }}
           />
         </div>
       )}
